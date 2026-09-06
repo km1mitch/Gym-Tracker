@@ -19,113 +19,116 @@
       margin: 0; padding: 16px; background-color: var(--bg-color); color: var(--text-main);
       max-width: 500px; margin: 0 auto; padding-bottom: 40px;
     }
-    h1 { color: var(--accent); margin: 0 0 4px 0; font-size: 24px; font-weight: 800; }
-    .subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 16px; }
+    h1 { color: var(--accent); margin: 0 0 2px 0; font-size: 22px; font-weight: 800; }
+    .subtitle { color: var(--text-muted); font-size: 12px; margin-bottom: 16px; }
     
-    /* Day Selector Tabs */
     .tabs { display: flex; gap: 6px; margin-bottom: 16px; background: #161b22; padding: 4px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; }
     .tab-btn { flex: 1; padding: 10px 6px; background: transparent; color: var(--text-muted); border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; text-align: center; white-space: nowrap; }
     .tab-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 10px var(--accent-glow); }
     
-    /* Cards & Collapsibles */
-    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .target-tag { background: rgba(0, 230, 118, 0.1); color: var(--accent); font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 600; text-transform: uppercase; }
     
-    /* Exercise Image / Form Guide */
-    .visual-guide { width: 100%; height: 140px; border-radius: 8px; object-fit: cover; margin: 8px 0; border: 1px solid var(--border-color); background: #21262d; }
+    /* Progress Bar Styles */
+    .goal-tracker { margin-bottom: 12px; }
+    .goal-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .progress-bg { background: #21262d; border-radius: 10px; height: 12px; border: 1px solid var(--border-color); overflow: hidden; }
+    .progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.4s ease-in-out; }
+
+    .visual-guide { width: 100%; height: 130px; border-radius: 8px; object-fit: cover; margin: 8px 0; border: 1px solid var(--border-color); background: #21262d; }
     details { margin-bottom: 8px; font-size: 13px; color: var(--text-muted); }
-    summary { cursor: pointer; color: var(--accent); font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    summary { cursor: pointer; color: var(--accent); font-size: 12px; font-weight: 600; margin-bottom: 4px; }
     .form-tips { background: #0d1117; padding: 10px; border-radius: 6px; margin-top: 6px; border-left: 3px solid var(--accent); line-height: 1.4; font-size: 12px; }
     
-    /* Checkbox Lists */
-    .checklist-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; color: #c9d1d9; }
+    .checklist-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: #c9d1d9; }
     .checklist-item input { width: auto; margin: 0; }
 
-    /* History Alert Banner */
-    .history-banner { background: rgba(0, 230, 118, 0.08); border: 1px solid var(--accent); border-radius: 6px; padding: 8px 12px; font-size: 12px; color: var(--accent); margin-bottom: 10px; display: none; }
+    .recommendation-box { background: rgba(0, 230, 118, 0.12); border: 1px solid var(--accent); border-radius: 8px; padding: 10px; font-size: 13px; color: #fff; margin-bottom: 12px; }
+    .recommendation-box b { color: var(--accent); }
 
-    /* Inputs */
     label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
-    select { width: 100%; padding: 10px; background: #21262d; color: #fff; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; font-size: 14px; font-weight: 600; }
+    select { width: 100%; padding: 10px; background: #21262d; color: #fff; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
     .input-row { display: flex; gap: 10px; }
     .input-group { flex: 1; }
-    input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: #21262d; color: #fff; box-sizing: border-box; font-size: 16px; font-weight: 600; }
+    input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #21262d; color: #fff; box-sizing: border-box; font-size: 15px; font-weight: 600; }
     input:focus { border-color: var(--accent); outline: none; }
     
-    .suggestion-banner { background: #21262d; padding: 10px; border-radius: 6px; font-size: 12px; color: #c9d1d9; margin-top: 10px; border: 1px dashed var(--border-color); text-align: center; }
-    .suggestion-banner.upgrade { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
-    
-    /* Buttons */
-    .btn-primary { background: var(--accent); color: #000; border: none; padding: 16px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; box-shadow: 0 4px 14px var(--accent-glow); margin-top: 10px; }
-    .section-title { font-size: 16px; color: var(--text-main); margin: 24px 0 10px 0; font-weight: 700; }
+    .btn-primary { background: var(--accent); color: #000; border: none; padding: 14px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; font-size: 15px; box-shadow: 0 4px 14px var(--accent-glow); margin-top: 10px; }
+    .section-title { font-size: 15px; color: var(--text-main); margin: 20px 0 10px 0; font-weight: 700; }
   </style>
 </head>
 <body>
 
   <h1>💪 Smart Gym Tracker</h1>
-  <div class="subtitle">Every-Other-Day Mass Building Routine</div>
+  <div class="subtitle">⚡ 45-Minute Express Routine (Every-Other-Day)</div>
 
-  <!-- Dynamic Day Tabs -->
+  <!-- Body Mass Goal Section -->
+  <div class="card">
+    <div class="card-header"><span class="target-tag">Mass Gain Journey</span></div>
+    <div class="goal-tracker">
+      <div class="goal-stats">
+        <span>Start: <b>65.1 kg</b></span>
+        <span id="current-weight-label">Current: <b>65.1 kg</b></span>
+        <span>Goal: <b>70.0 kg</b></span>
+      </div>
+      <div class="progress-bg">
+        <div class="progress-fill" id="goal-progress-bar"></div>
+      </div>
+    </div>
+    <div class="input-row" style="align-items: flex-end;">
+      <div class="input-group">
+        <label>Log Today's Weight (kg)</label>
+        <input type="number" step="0.1" id="body-weight-input" value="65.1">
+      </div>
+      <button class="btn-primary" id="save-weight-btn" style="margin: 0; width: auto; padding: 10px 16px;">Update Weight</button>
+    </div>
+  </div>
+
   <div class="tabs" id="day-tabs"></div>
 
-  <!-- Pre-Workout Nutrition & Dynamic Warm-Up -->
+  <!-- Pre-Workout Prep -->
   <div class="card">
     <details>
-      <summary>🥗 Pre-Workout Fuel Options (60m Before)</summary>
+      <summary>🥗 Pre-Workout Fuel (60m Before)</summary>
       <div class="form-tips">
-        • <b>Option A:</b> 1 banana + 2 tbsp peanut butter on toast.<br>
-        • <b>Option B:</b> Oatmeal + 1 scoop protein powder.<br>
-        • <b>Option C:</b> High-calorie smoothie (banana, milk, oats, peanut butter).
+        • 1 banana + 2 tbsp peanut butter on toast.<br>
+        • Oatmeal + 1 scoop protein powder.<br>
+        • Smoothie: Banana, whole milk, oats, peanut butter.
       </div>
     </details>
     <details open>
-      <summary>🔥 Pre-Workout Dynamic Warm-Up (7–10 Mins)</summary>
-      <div style="margin-top:8px;">
-        <div class="checklist-item"><input type="checkbox"> 2–3 mins light cardio (rower or incline walk)</div>
-        <div class="checklist-item"><input type="checkbox"> Arm circles & cross swings (10 reps each)</div>
+      <summary>🔥 Dynamic Warm-Up (5 Mins)</summary>
+      <div style="margin-top:6px;">
+        <div class="checklist-item"><input type="checkbox"> 2 mins light rower / incline walk</div>
+        <div class="checklist-item"><input type="checkbox"> Arm circles & swings (10 reps)</div>
         <div class="checklist-item"><input type="checkbox"> Bodyweight squats (10 reps)</div>
-        <div class="checklist-item"><input type="checkbox"> World's Greatest Stretch (5 per side)</div>
       </div>
     </details>
   </div>
 
-  <!-- Routine Section -->
   <div id="workout-container">Loading routine...</div>
 
   <button class="btn-primary" id="save-workout-btn">Save Workout Routine</button>
 
-  <!-- Post-Workout Cool-Down & Nutrition -->
+  <!-- Post-Workout Prep -->
   <div class="section-title">🧘 Post-Workout Recovery</div>
   <div class="card">
-    <details open>
-      <summary>🧘 Cool-Down Stretches (5 Mins)</summary>
-      <div style="margin-top:8px;">
-        <div class="checklist-item"><input type="checkbox"> Static Hamstring & Calf stretch (30s per leg)</div>
-        <div class="checklist-item"><input type="checkbox"> Doorway Chest stretch (30s)</div>
-        <div class="checklist-item"><input type="checkbox"> Child's Pose lat stretch (60s)</div>
+    <details>
+      <summary>🧘 Quick Cool-Down (3 Mins)</summary>
+      <div style="margin-top:6px;">
+        <div class="checklist-item"><input type="checkbox"> Hamstring & calf stretch (30s per leg)</div>
+        <div class="checklist-item"><input type="checkbox"> Doorway chest stretch (30s)</div>
       </div>
     </details>
     <details>
-      <summary>🥪 Post-Workout Fuel Options (Within 60m)</summary>
+      <summary>🥪 Post-Workout Fuel (Within 60m)</summary>
       <div class="form-tips">
-        • <b>Option A:</b> Whey protein shake + bagel or chicken & rice.<br>
-        • <b>Option B:</b> 3 scrambled eggs + 2 slices toast + 1/2 avocado.<br>
-        • <b>Option C:</b> Full-fat Greek yogurt + honey + granola + berries.
+        • Whey shake + bagel or chicken & rice.<br>
+        • 3 eggs + toast + avocado.<br>
+        • Greek yogurt + honey + granola.
       </div>
     </details>
-  </div>
-
-  <!-- Body Weight Tracker -->
-  <div class="section-title">⚖️ Body Weight Tracker</div>
-  <div class="card">
-    <div class="input-row" style="align-items: flex-end;">
-      <div class="input-group">
-        <label>Today's Weight (kg)</label>
-        <input type="number" step="0.1" id="body-weight-input" placeholder="e.g. 65.5">
-      </div>
-      <button class="btn-primary" id="save-weight-btn" style="margin: 0; width: auto; padding: 12px 20px;">Log Weight</button>
-    </div>
   </div>
 
   <script type="module">
@@ -148,31 +151,42 @@
       db = getFirestore(app);
     } catch (e) { console.log("Firebase initialized in preview mode."); }
 
+    const START_WEIGHT = 65.1;
+    const GOAL_WEIGHT = 70.0;
+
+    function updateGoalUI(currentWeight) {
+      document.getElementById('current-weight-label').innerHTML = `Current: <b>${currentWeight.toFixed(1)} kg</b>`;
+      const gained = Math.max(0, currentWeight - START_WEIGHT);
+      const totalToGain = GOAL_WEIGHT - START_WEIGHT;
+      const progressPct = Math.min(100, (gained / totalToGain) * 100);
+      document.getElementById('goal-progress-bar').style.width = `${progressPct}%`;
+    }
+
     const exerciseData = {
-      "Barbell Back Squat": { img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=600&q=80", tips: "Chest up, knees tracking over toes, squat down to parallel." },
-      "Goblet Squat (DB/KB)": { img: "https://images.unsplash.com/photo-1566241142559-40e1dab266c6?auto=format&fit=crop&w=600&q=80", tips: "Hold weight close to chest, keep torso upright." },
-      "Leg Press Machine": { img: "https://images.unsplash.com/photo-1534367507873-d2d7e24c797f?auto=format&fit=crop&w=600&q=80", tips: "Feet shoulder-width on plate, lower slowly without arching back." },
-      "Barbell Bench Press": { img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Pinch shoulder blades back, touch lower chest." },
-      "Flat Dumbbell Press": { img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80", tips: "Keep elbows at 45° angle, press dumbbells together at top." },
-      "Lat Pulldown": { img: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&q=80", tips: "Lean back slightly, pull bar down to collarbone." },
-      "Conventional Deadlift": { img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Hinge at hips, keep bar close to shins." },
-      "Incline Dumbbell Press": { img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Bench at 30°, press upward focusing on upper chest." },
-      "Seated Cable Row": { img: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80", tips: "Pull handle to lower stomach, squeeze shoulder blades." }
+      "Barbell Back Squat": { defaultWeight: 30, img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=600&q=80", tips: "Chest up, squat to parallel." },
+      "Goblet Squat (DB/KB)": { defaultWeight: 12, img: "https://images.unsplash.com/photo-1566241142559-40e1dab266c6?auto=format&fit=crop&w=600&q=80", tips: "Hold weight close to chest." },
+      "Leg Press Machine": { defaultWeight: 50, img: "https://images.unsplash.com/photo-1534367507873-d2d7e24c797f?auto=format&fit=crop&w=600&q=80", tips: "Feet shoulder-width apart." },
+      "Barbell Bench Press": { defaultWeight: 30, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Touch lower chest, press up." },
+      "Flat Dumbbell Press": { defaultWeight: 10, img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80", tips: "Elbows tucked at 45 degrees." },
+      "Lat Pulldown": { defaultWeight: 25, img: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&q=80", tips: "Pull bar down to collarbone." },
+      "Conventional Deadlift": { defaultWeight: 40, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Hinge at hips, keep bar close." },
+      "Incline Dumbbell Press": { defaultWeight: 10, img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Bench set to 30 degrees." },
+      "Seated Cable Row": { defaultWeight: 25, img: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80", tips: "Pull handle to lower stomach." },
+      "Dumbbell Overhead Press": { defaultWeight: 8, img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Press overhead without arching back." }
     };
 
     const routineTemplates = [
       [
-        { target: "Quads / Glutes", options: ["Barbell Back Squat", "Goblet Squat (DB/KB)", "Leg Press Machine"] },
+        { target: "Quads", options: ["Barbell Back Squat", "Goblet Squat (DB/KB)", "Leg Press Machine"] },
         { target: "Chest", options: ["Barbell Bench Press", "Flat Dumbbell Press"] },
-        { target: "Lats / Back", options: ["Lat Pulldown"] }
+        { target: "Lats", options: ["Lat Pulldown"] },
+        { target: "Shoulders", options: ["Dumbbell Overhead Press"] }
       ],
       [
         { target: "Posterior Chain", options: ["Conventional Deadlift"] },
-        { target: "Upper Chest", options: ["Incline Dumbbell Press"] }
-      ],
-      [
-        { target: "Quads", options: ["Leg Press Machine", "Barbell Back Squat"] },
-        { target: "Mid Back", options: ["Seated Cable Row"] }
+        { target: "Upper Chest", options: ["Incline Dumbbell Press"] },
+        { target: "Upper Back", options: ["Seated Cable Row"] },
+        { target: "Quads", options: ["Leg Press Machine", "Goblet Squat (DB/KB)"] }
       ]
     ];
 
@@ -181,7 +195,7 @@
     for (let i = 0; i < 7; i++) {
       schedule.push({
         name: `${days[i % 7]} (Workout ${Math.floor(i / 2) + 1})`,
-        templateIndex: (Math.floor(i / 2)) % 3,
+        templateIndex: (Math.floor(i / 2)) % 2,
         isRest: i % 2 !== 0
       });
     }
@@ -204,43 +218,48 @@
       renderExercises();
     };
 
-    window.updateVisualsAndFetchHistory = async function(index) {
+    window.fetchRecommendation = async function(index) {
       const selectedEx = document.getElementById(`exercise-${index}`).value;
-      const data = exerciseData[selectedEx] || { img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Maintain strict form." };
+      const data = exerciseData[selectedEx] || { defaultWeight: 20, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Maintain strict form." };
       
       document.getElementById(`img-${index}`).src = data.img;
       document.getElementById(`tips-${index}`).innerText = data.tips;
+
+      const recBox = document.getElementById(`rec-box-${index}`);
+      const weightInput = document.getElementById(`weight-${index}`);
+      const repsInput = document.getElementById(`reps-${index}`);
+
+      let targetWeight = data.defaultWeight;
 
       if (db) {
         try {
           const docRef = doc(db, "exercise_history", selectedEx.replace(/\s+/g, '_'));
           const docSnap = await getDoc(docRef);
           
-          const historyBanner = document.getElementById(`history-${index}`);
           if (docSnap.exists()) {
             const lastData = docSnap.data();
-            const lastWeight = parseFloat(lastData.weight) || 0;
-            const lastReps = parseInt(lastData.reps) || 0;
-
-            historyBanner.style.display = "block";
-            historyBanner.innerText = `📜 Last Time: ${lastWeight} kg × ${lastReps} reps`;
-
-            const weightInput = document.getElementById(`weight-${index}`);
-            const repsInput = document.getElementById(`reps-${index}`);
+            const lastWeight = parseFloat(lastData.weight) || data.defaultWeight;
+            const lastReps = parseInt(lastData.reps) || 8;
 
             if (lastReps >= 10) {
-              weightInput.value = (lastWeight + 2.5).toFixed(1);
-              repsInput.value = 8;
+              targetWeight = lastWeight + 2.5;
+              recBox.innerHTML = `🎯 <b>Recommendation:</b> Increase to <b>${targetWeight} kg</b> for 8 reps (Last: ${lastWeight}kg × ${lastReps} reps).`;
             } else {
-              weightInput.value = lastWeight;
-              repsInput.value = lastReps;
+              targetWeight = lastWeight;
+              recBox.innerHTML = `🎯 <b>Recommendation:</b> Stay at <b>${targetWeight} kg</b> and aim for 8–10 reps (Last: ${lastWeight}kg × ${lastReps} reps).`;
             }
-            calculateProgression(index);
           } else {
-            historyBanner.style.display = "none";
+            recBox.innerHTML = `🎯 <b>First Time Target:</b> Start with <b>${targetWeight} kg</b> × 8–10 reps.`;
           }
-        } catch (err) { console.log("History fetch error", err); }
+        } catch (err) {
+          recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight} kg</b> × 8–10 reps.`;
+        }
+      } else {
+        recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight} kg</b> × 8–10 reps.`;
       }
+
+      weightInput.value = targetWeight;
+      repsInput.value = 8;
     };
 
     function renderExercises() {
@@ -256,8 +275,10 @@
         container.innerHTML += `
           <div class="card">
             <div class="card-header"><span class="target-tag">${ex.target}</span></div>
-            <select id="exercise-${index}" onchange="updateVisualsAndFetchHistory(${index})">${optionsHTML}</select>
-            <div class="history-banner" id="history-${index}"></div>
+            <select id="exercise-${index}" onchange="fetchRecommendation(${index})">${optionsHTML}</select>
+            
+            <div class="recommendation-box" id="rec-box-${index}">Calculating target recommendation...</div>
+
             <img id="img-${index}" class="visual-guide" src="${defaultData.img}" alt="Guide">
             <details>
               <summary>📖 View Form Cues</summary>
@@ -265,48 +286,38 @@
             </details>
             <div class="input-row">
               <div class="input-group">
-                <label>Weight (kg)</label>
-                <input type="number" id="weight-${index}" placeholder="0" oninput="calculateProgression(${index})">
+                <label>Weight Lifted (kg)</label>
+                <input type="number" id="weight-${index}">
               </div>
               <div class="input-group">
-                <label>Reps Done</label>
-                <input type="number" id="reps-${index}" placeholder="0" oninput="calculateProgression(${index})">
+                <label>Reps Completed</label>
+                <input type="number" id="reps-${index}">
               </div>
             </div>
-            <div class="suggestion-banner" id="suggestion-${index}">Log weight & reps to see recommendation.</div>
           </div>
         `;
-        setTimeout(() => updateVisualsAndFetchHistory(index), 100);
+        setTimeout(() => fetchRecommendation(index), 100);
       });
     }
 
-    window.calculateProgression = function(index) {
-      const weight = parseFloat(document.getElementById(`weight-${index}`).value);
-      const reps = parseInt(document.getElementById(`reps-${index}`).value);
-      const banner = document.getElementById(`suggestion-${index}`);
-
-      if (!weight || !reps) {
-        banner.className = "suggestion-banner";
-        banner.innerText = "Log weight & reps to see recommendation.";
-        return;
-      }
-
-      if (reps >= 10) {
-        banner.className = "suggestion-banner upgrade";
-        banner.innerHTML = `🔥 Target Reached! Next session: Increase to <b>${(weight + 2.5).toFixed(1)} kg</b>`;
-      } else if (reps >= 8) {
-        banner.className = "suggestion-banner";
-        banner.innerHTML = `✅ Good Form Target! Next session: Aim for 10 reps at <b>${weight} kg</b>`;
-      } else {
-        banner.className = "suggestion-banner";
-        banner.innerHTML = `⚠️ Below 8 reps. Stay at <b>${weight} kg</b> until form/reps improve.`;
-      }
-    };
-
     renderTabs();
     renderExercises();
+    updateGoalUI(START_WEIGHT);
 
     if (db) {
+      // Fetch Latest Body Weight On App Load
+      (async () => {
+        try {
+          const weightRef = doc(db, "user_profile", "body_weight");
+          const weightSnap = await getDoc(weightRef);
+          if (weightSnap.exists()) {
+            const currentW = parseFloat(weightSnap.data().latest_weight) || START_WEIGHT;
+            document.getElementById('body-weight-input').value = currentW;
+            updateGoalUI(currentW);
+          }
+        } catch(e) {}
+      })();
+
       document.getElementById('save-workout-btn').addEventListener('click', async () => {
         const currentTemplate = routineTemplates[schedule[activeDayIndex].templateIndex];
         const logData = {};
@@ -332,16 +343,20 @@
             date: today,
             exercises: logData
           });
-          alert(`Saved! Performance updated for future workout suggestions.`);
+          alert(`Saved! Recommendations updated for your next session.`);
         } catch (e) { alert("Error: " + e.message); }
       });
 
       document.getElementById('save-weight-btn').addEventListener('click', async () => {
-        const weightVal = document.getElementById('body-weight-input').value;
+        const weightVal = parseFloat(document.getElementById('body-weight-input').value);
         if (!weightVal) return alert("Enter weight!");
         const today = new Date().toISOString().split('T')[0];
-        await setDoc(doc(db, "body_weight_logs", today), { weight_kg: parseFloat(weightVal), date: today });
-        alert(`Logged ${weightVal} kg!`);
+
+        await setDoc(doc(db, "user_profile", "body_weight"), { latest_weight: weightVal });
+        await setDoc(doc(db, "body_weight_logs", today), { weight_kg: weightVal, date: today });
+
+        updateGoalUI(weightVal);
+        alert(`Logged ${weightVal} kg! Progress updated.`);
       });
     }
   </script>
