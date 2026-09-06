@@ -3,24 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Gym Tracker</title>
+  <title>Smart Gym Tracker Pro</title>
   <style>
-    body { font-family: -apple-system, sans-serif; margin: 20px; background: #121212; color: #fff; }
-    h1 { color: #00e676; margin-bottom: 5px; }
-    .subtext { color: #aaa; margin-bottom: 20px; font-size: 14px; }
-    .card { background: #1e1e1e; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #333; }
-    .card h3 { margin: 0 0 5px 0; color: #fff; }
-    .swap { color: #888; font-size: 13px; margin-bottom: 10px; display: block; }
-    input { padding: 10px; margin: 5px 0; width: 45%; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; box-sizing: border-box; }
-    button { background: #00e676; color: #000; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
-    button:active { background: #00b359; }
+    :root {
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --border-color: #30363d;
+      --accent: #00e676;
+      --accent-glow: rgba(0, 230, 118, 0.15);
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0; padding: 16px; background-color: var(--bg-color); color: var(--text-main);
+      max-width: 500px; margin: 0 auto; padding-bottom: 40px;
+    }
+    h1 { color: var(--accent); margin: 0 0 4px 0; font-size: 24px; font-weight: 800; }
+    .subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+    
+    /* Navigation Tabs */
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; background: #161b22; padding: 4px; border-radius: 10px; border: 1px solid var(--border-color); }
+    .tab-btn { flex: 1; padding: 12px; background: transparent; color: var(--text-muted); border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .tab-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 10px var(--accent-glow); }
+    
+    /* Exercise Cards */
+    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .target-tag { background: rgba(0, 230, 118, 0.1); color: var(--accent); font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 600; text-transform: uppercase; }
+    
+    /* Exercise Image / Form Guide */
+    .visual-guide { width: 100%; height: 140px; border-radius: 8px; object-fit: cover; margin: 8px 0; border: 1px solid var(--border-color); background: #21262d; }
+    details { margin-bottom: 12px; font-size: 13px; color: var(--text-muted); }
+    summary { cursor: pointer; color: var(--accent); font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+    .form-tips { background: #0d1117; padding: 10px; border-radius: 6px; margin-top: 6px; border-left: 3px solid var(--accent); line-height: 1.4; }
+    
+    /* Inputs */
+    label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
+    select { width: 100%; padding: 10px; background: #21262d; color: #fff; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; font-size: 14px; font-weight: 600; }
+    .input-row { display: flex; gap: 10px; }
+    .input-group { flex: 1; }
+    input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: #21262d; color: #fff; box-sizing: border-box; font-size: 16px; font-weight: 600; }
+    input:focus { border-color: var(--accent); outline: none; }
+    
+    /* Smart Banner */
+    .suggestion-banner { background: #21262d; padding: 10px; border-radius: 6px; font-size: 12px; color: #c9d1d9; margin-top: 10px; border: 1px dashed var(--border-color); text-align: center; }
+    .suggestion-banner.upgrade { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+    
+    /* Buttons */
+    .btn-primary { background: var(--accent); color: #000; border: none; padding: 16px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; box-shadow: 0 4px 14px var(--accent-glow); margin-top: 10px; }
+    .btn-primary:active { transform: scale(0.98); }
+    .section-title { font-size: 16px; color: var(--text-main); margin: 30px 0 12px 0; font-weight: 700; display: flex; align-items: center; gap: 8px; }
   </style>
 </head>
 <body>
 
-  <h1>💪 Gym Tracker</h1>
-  <div class="subtext">Full Body Day A Routine</div>
-  <div id="workout-container">Loading routine...</div>
+  <h1>💪 Smart Gym Tracker</h1>
+  <div class="subtitle">3-Day Compound Mass Building Routine</div>
+
+  <!-- Day Selector -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchDay('Day A')">Day A</button>
+    <button class="tab-btn" onclick="switchDay('Day B')">Day B</button>
+    <button class="tab-btn" onclick="switchDay('Day C')">Day C</button>
+  </div>
+
+  <div id="workout-container">Loading workout routine...</div>
+
+  <button class="btn-primary" id="save-workout-btn">Save Workout Routine</button>
+
+  <!-- Body Weight Tracker -->
+  <div class="section-title">⚖️ Body Mass Tracker</div>
+  <div class="card">
+    <div class="input-row" style="align-items: flex-end;">
+      <div class="input-group">
+        <label>Today's Weight (kg)</label>
+        <input type="number" step="0.1" id="body-weight-input" placeholder="e.g. 65.5">
+      </div>
+      <button class="btn-primary" id="save-weight-btn" style="margin: 0; width: auto; padding: 12px 20px;">Log Weight</button>
+    </div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -36,50 +98,162 @@
       appId: "YOUR_APP_ID"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const exerciseData = {
+      "Barbell Back Squat": { img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=600&q=80", tips: "Chest up, knees tracking over toes, squat down to parallel." },
+      "Goblet Squat (DB/KB)": { img: "https://images.unsplash.com/photo-1566241142559-40e1dab266c6?auto=format&fit=crop&w=600&q=80", tips: "Hold weight close to chest, keep torso upright, drive through heels." },
+      "Leg Press Machine": { img: "https://images.unsplash.com/photo-1534367507873-d2d7e24c797f?auto=format&fit=crop&w=600&q=80", tips: "Feet shoulder-width on plate, lower slowly without arching back." },
+      "Barbell Bench Press": { img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Pinch shoulder blades back, touch lower chest, press up explosively." },
+      "Flat Dumbbell Press": { img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80", tips: "Keep elbows at a 45° angle, press dumbbells together at top." },
+      "Lat Pulldown": { img: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&q=80", tips: "Lean back slightly, pull bar down to collarbone, squeeze upper back." },
+      "Conventional Deadlift": { img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Hinge at hips, keep bar close to shins, lift with chest high." },
+      "Incline Dumbbell Press": { img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Bench at 30 degrees, press upward focusing on upper chest contraction." },
+      "Seated Cable Row": { img: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80", tips: "Pull handle to belly button, squeeze shoulder blades together." }
+    };
 
-    const dayA = [
-      { name: "Barbell Back Squat", swap: "Leg Press Machine" },
-      { name: "Barbell Bench Press", swap: "Dumbbell Press" },
-      { name: "Lat Pulldown", swap: "Assisted Pull-Ups" },
-      { name: "DB Overhead Press", swap: "Shoulder Press Machine" },
-      { name: "Plank", swap: "Ab Wheel Rollout" }
-    ];
+    const routines = {
+      "Day A": [
+        { target: "Quads / Glutes", options: ["Barbell Back Squat", "Goblet Squat (DB/KB)", "Leg Press Machine"] },
+        { target: "Chest", options: ["Barbell Bench Press", "Flat Dumbbell Press"] },
+        { target: "Lats / Back", options: ["Lat Pulldown"] }
+      ],
+      "Day B": [
+        { target: "Posterior Chain", options: ["Conventional Deadlift"] },
+        { target: "Upper Chest", options: ["Incline Dumbbell Press"] }
+      ],
+      "Day C": [
+        { target: "Quads", options: ["Leg Press Machine", "Barbell Back Squat"] },
+        { target: "Mid Back", options: ["Seated Cable Row"] }
+      ]
+    };
 
-    const container = document.getElementById('workout-container');
-    container.innerHTML = "";
+    let currentDay = "Day A";
 
-    dayA.forEach((ex, index) => {
-      container.innerHTML += `
-        <div class="card">
-          <h3>${ex.name}</h3>
-          <span class="swap">Alternative: ${ex.swap}</span>
-          <input type="number" id="weight-${index}" placeholder="Weight (kg)">
-          <input type="number" id="reps-${index}" placeholder="Reps">
-        </div>
-      `;
-    });
+    window.switchDay = function(day) {
+      currentDay = day;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.innerText === day);
+      });
+      renderExercises();
+    };
 
-    container.innerHTML += `<button id="save-btn">Save Workout to Firebase</button>`;
+    window.updateVisuals = function(index) {
+      const selected = document.getElementById(`exercise-${index}`).value;
+      const data = exerciseData[selected] || { 
+        img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", 
+        tips: "Maintain strict control and full range of motion." 
+      };
+      document.getElementById(`img-${index}`).src = data.img;
+      document.getElementById(`tips-${index}`).innerText = data.tips;
+    };
 
-    document.getElementById('save-btn').addEventListener('click', async () => {
-      const logData = {};
-      dayA.forEach((ex, index) => {
-        logData[ex.name] = {
-          weight: document.getElementById(`weight-${index}`).value || 0,
-          reps: document.getElementById(`reps-${index}`).value || 0
-        };
+    function renderExercises() {
+      const container = document.getElementById('workout-container');
+      container.innerHTML = "";
+
+      routines[currentDay].forEach((ex, index) => {
+        const optionsHTML = ex.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+        const defaultEx = ex.options[0];
+        const defaultData = exerciseData[defaultEx] || { img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Keep core tight." };
+
+        container.innerHTML += `
+          <div class="card">
+            <div class="card-header">
+              <span class="target-tag">${ex.target}</span>
+            </div>
+            <select id="exercise-${index}" onchange="updateVisuals(${index})">${optionsHTML}</select>
+            
+            <img id="img-${index}" class="visual-guide" src="${defaultData.img}" alt="Exercise Guide">
+            
+            <details>
+              <summary>📖 View Form & Safety Cues</summary>
+              <div class="form-tips" id="tips-${index}">${defaultData.tips}</div>
+            </details>
+
+            <div class="input-row">
+              <div class="input-group">
+                <label>Weight (kg)</label>
+                <input type="number" id="weight-${index}" placeholder="0" oninput="calculateProgression(${index})">
+              </div>
+              <div class="input-group">
+                <label>Reps Done</label>
+                <input type="number" id="reps-${index}" placeholder="0" oninput="calculateProgression(${index})">
+              </div>
+            </div>
+            <div class="suggestion-banner" id="suggestion-${index}">Log weight & reps to see target progression.</div>
+          </div>
+        `;
+      });
+    }
+
+    window.calculateProgression = function(index) {
+      const weight = parseFloat(document.getElementById(`weight-${index}`).value);
+      const reps = parseInt(document.getElementById(`reps-${index}`).value);
+      const banner = document.getElementById(`suggestion-${index}`);
+
+      if (!weight || !reps) {
+        banner.className = "suggestion-banner";
+        banner.innerText = "Log weight & reps to see target progression.";
+        return;
+      }
+
+      if (reps >= 10) {
+        banner.className = "suggestion-banner upgrade";
+        banner.innerHTML = `🔥 Target Cleared! Next time: Increase to <b>${(weight + 2.5).toFixed(1)} kg</b>`;
+      } else if (reps >= 8) {
+        banner.className = "suggestion-banner";
+        banner.innerHTML = `✅ Good Form Target! Next time: Aim for 10 reps at <b>${weight} kg</b>`;
+      } else {
+        banner.className = "suggestion-banner";
+        banner.innerHTML = `⚠️ Below 8 reps. Keep weight at <b>${weight} kg</b> until reps improve.`;
+      }
+    };
+
+    renderExercises();
+
+    // Firebase Operations
+    try {
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      document.getElementById('save-workout-btn').addEventListener('click', async () => {
+        const logData = {};
+        routines[currentDay].forEach((ex, index) => {
+          const selectedEx = document.getElementById(`exercise-${index}`).value;
+          logData[selectedEx] = {
+            weight: document.getElementById(`weight-${index}`).value || 0,
+            reps: document.getElementById(`reps-${index}`).value || 0,
+            target_muscle: ex.target
+          };
+        });
+
+        const today = new Date().toISOString().split('T')[0];
+        try {
+          await setDoc(doc(db, "workout_logs", `${today}_${currentDay.replace(" ", "")}`), {
+            day: currentDay,
+            date: today,
+            exercises: logData
+          });
+          alert(`Success! ${currentDay} logged to cloud.`);
+        } catch (e) {
+          alert("Firebase Error: " + e.message);
+        }
       });
 
-      const today = new Date().toISOString().split('T')[0];
-      try {
-        await setDoc(doc(db, "logs", today), logData);
-        alert("Workout saved successfully!");
-      } catch (e) {
-        alert("Error saving: " + e.message);
-      }
-    });
+      document.getElementById('save-weight-btn').addEventListener('click', async () => {
+        const weightVal = document.getElementById('body-weight-input').value;
+        if (!weightVal) return alert("Please enter weight!");
+
+        const today = new Date().toISOString().split('T')[0];
+        try {
+          await setDoc(doc(db, "body_weight_logs", today), { weight_kg: parseFloat(weightVal), date: today });
+          alert(`Body weight (${weightVal} kg) saved!`);
+        } catch (e) {
+          alert("Error: " + e.message);
+        }
+      });
+    } catch (e) {
+      console.log("Firebase running in preview mode.");
+    }
   </script>
 </body>
 </html>
