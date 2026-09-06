@@ -260,11 +260,13 @@
       appId: "YOUR_APP_ID"
     };
 
-    let db;
+    let db = null;
     try {
       const app = initializeApp(firebaseConfig);
       db = getFirestore(app);
-    } catch (e) { console.log("Firebase initialized in preview mode."); }
+    } catch (e) { 
+      console.log("Firebase initialized in preview mode."); 
+    }
 
     let currentUnit = "kg";
     const START_WEIGHT_KG = 65.1;
@@ -273,7 +275,6 @@
     let timerInterval;
     let rpeFeedback = {};
     let previousPrs = {};
-    let customExerciseCount = 0;
 
     window.setUnit = function(unit) {
       currentUnit = unit;
@@ -313,13 +314,15 @@
       const card = document.getElementById(`card-${index}`);
       const rpeBox = document.getElementById(`rpe-box-${index}`);
 
-      if (checkbox.checked) {
-        card.classList.add('completed');
-        rpeBox.style.display = "block";
-        startTimer(90);
-      } else {
-        card.classList.remove('completed');
-        rpeBox.style.display = "none";
+      if (checkbox && card && rpeBox) {
+        if (checkbox.checked) {
+          card.classList.add('completed');
+          rpeBox.style.display = "block";
+          startTimer(90);
+        } else {
+          card.classList.remove('completed');
+          rpeBox.style.display = "none";
+        }
       }
     };
 
@@ -327,7 +330,7 @@
       rpeFeedback[index] = rating;
       ['easy', 'ok', 'hard'].forEach(r => {
         const btn = document.getElementById(`rpe-${r}-${index}`);
-        btn.classList.toggle('selected', r === rating);
+        if (btn) btn.classList.toggle('selected', r === rating);
       });
     };
 
@@ -395,11 +398,12 @@
 
     window.adjustVal = function(id, delta) {
       const input = document.getElementById(id);
+      if (!input) return;
       let val = parseFloat(input.value) || 0;
-      const step = currentUnit === 'lbs' ? delta * 2.2 : delta;
+      const step = (id.includes('weight') && currentUnit === 'lbs') ? delta * 2.2 : delta;
       input.value = Math.max(0, val + step).toFixed(1);
       const index = id.split('-')[1];
-      checkPr(index);
+      if (id.includes('weight')) checkPr(index);
     };
 
     function updateGoalUI(currentWeight) {
@@ -514,17 +518,25 @@
     };
 
     window.fetchRecommendation = async function(index) {
-      const selectedEx = document.getElementById(`exercise-${index}`).value;
+      const exSelect = document.getElementById(`exercise-${index}`);
+      if (!exSelect) return;
+
+      const selectedEx = exSelect.value;
       const data = exerciseData[selectedEx] || { isBarbell: false, defaultWeight: 20, videoId: "gcNh17Ckjgg", tips: "Maintain strict form." };
       
-      document.getElementById(`video-box-${index}`).innerHTML = `<iframe src="https://www.youtube.com/embed/${data.videoId}?rel=0" allowfullscreen></iframe>`;
-      document.getElementById(`tips-${index}`).innerText = data.tips;
+      const videoBox = document.getElementById(`video-box-${index}`);
+      if (videoBox) videoBox.innerHTML = `<iframe src="https://www.youtube.com/embed/${data.videoId}?rel=0" allowfullscreen></iframe>`;
+      
+      const tipsBox = document.getElementById(`tips-${index}`);
+      if (tipsBox) tipsBox.innerText = data.tips;
 
       const calcContainer = document.getElementById(`tool-btns-container-${index}`);
-      calcContainer.innerHTML = `
-        <button class="btn-tool" onclick="openWarmupCalc(document.getElementById('weight-${index}').value)">🔥 Warm-Up Sets</button>
-        ${data.isBarbell ? `<button class="btn-tool" onclick="openPlateCalc(document.getElementById('weight-${index}').value)">🧮 Barbell Plates</button>` : ''}
-      `;
+      if (calcContainer) {
+        calcContainer.innerHTML = `
+          <button class="btn-tool" onclick="openWarmupCalc(document.getElementById('weight-${index}').value)">🔥 Warm-Up Sets</button>
+          ${data.isBarbell ? `<button class="btn-tool" onclick="openPlateCalc(document.getElementById('weight-${index}').value)">🧮 Barbell Plates</button>` : ''}
+        `;
+      }
 
       const recBox = document.getElementById(`rec-box-${index}`);
       const weightInput = document.getElementById(`weight-${index}`);
@@ -545,25 +557,25 @@
 
             if (lastRpe === 'easy') {
               targetWeight = lastWeight + (currentUnit === 'lbs' ? 5 : 2.5);
-              recBox.innerHTML = `🎯 <b>Smart Rec (Felt Easy):</b> Increase to <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8 reps.`;
+              if (recBox) recBox.innerHTML = `🎯 <b>Smart Rec (Felt Easy):</b> Increase to <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8 reps.`;
             } else if (lastRpe === 'hard') {
               targetWeight = lastWeight;
-              recBox.innerHTML = `🎯 <b>Smart Rec (Felt Hard):</b> Hold at <b>${targetWeight.toFixed(1)} ${currentUnit}</b> & focus on form.`;
+              if (recBox) recBox.innerHTML = `🎯 <b>Smart Rec (Felt Hard):</b> Hold at <b>${targetWeight.toFixed(1)} ${currentUnit}</b> & focus on form.`;
             } else {
               targetWeight = lastWeight;
-              recBox.innerHTML = `🎯 <b>Smart Rec:</b> Continue at <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
+              if (recBox) recBox.innerHTML = `🎯 <b>Smart Rec:</b> Continue at <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
             }
           } else {
-            recBox.innerHTML = `🎯 <b>First Time Target:</b> Start with <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
+            if (recBox) recBox.innerHTML = `🎯 <b>First Time Target:</b> Start with <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
           }
         } catch (err) {
-          recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
+          if (recBox) recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
         }
       } else {
-        recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
+        if (recBox) recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
       }
 
-      weightInput.value = targetWeight.toFixed(1);
+      if (weightInput) weightInput.value = targetWeight.toFixed(1);
     };
 
     window.addAdditionalExercise = function() {
@@ -747,80 +759,40 @@
       }
     });
 
-    if (db) {
-      (async () => {
-        try {
-          const today = new Date().toISOString().split('T')[0];
-
-          const logName = isExtraMode ? "ExtraWorkout" : schedule[activeDayIndex].name.replace(/\s+/g, '');
-          const logRef = doc(db, "workout_logs", `${today}_${logName}`);
-          const logSnap = await getDoc(logRef);
-
-          if (logSnap.exists()) {
-            document.getElementById('archived-banner').style.display = 'block';
-            document.getElementById('save-workout-btn').innerText = 'WORKOUT ARCHIVED FOR TODAY ✅';
-            const savedExercises = logSnap.data().exercises || {};
-            
-            setTimeout(() => {
-              Object.keys(savedExercises).forEach((exName, idx) => {
-                const exInput = document.getElementById(`exercise-${idx}`);
-                if (exInput) {
-                  exInput.value = exName;
-                  document.getElementById(`sets-${idx}`).value = savedExercises[exName].sets || 3;
-                  document.getElementById(`weight-${idx}`).value = savedExercises[exName].weight || 0;
-                  document.getElementById(`reps-${idx}`).value = savedExercises[exName].reps || 8;
-                  document.getElementById(`complete-check-${idx}`).checked = true;
-                  toggleExerciseComplete(idx);
-                }
-              });
-            }, 500);
-          }
-
-          const weightRef = doc(db, "user_profile", "body_weight");
-          const weightSnap = await getDoc(weightRef);
-          if (weightSnap.exists()) {
-            const currentW = parseFloat(weightSnap.data().latest_weight) || START_WEIGHT_KG;
-            document.getElementById('body-weight-input').value = currentW;
-            updateGoalUI(currentW);
-            weightChart.data.datasets[0].data[1] = currentW;
-            weightChart.update();
-          }
-
-          const streakRef = doc(db, "user_profile", "streak");
-          const streakSnap = await getDoc(streakRef);
-          if (streakSnap.exists()) {
-            document.getElementById('streak-counter').innerText = streakSnap.data().count || 0;
-          }
-        } catch(e) {}
-      })();
-
-      document.getElementById('save-workout-btn').addEventListener('click', async () => {
+    // Save Workout Click Event Listener
+    document.getElementById('save-workout-btn').addEventListener('click', async () => {
+      try {
         const container = document.getElementById('workout-container');
         const totalCards = container.children.length;
         const logData = {};
         const today = new Date().toISOString().split('T')[0];
 
         for (let index = 0; index < totalCards; index++) {
-          const selectedEx = document.getElementById(`exercise-${index}`).value;
-          const sets = document.getElementById(`sets-${index}`).value || 3;
-          const weight = document.getElementById(`weight-${index}`).value || 0;
-          const reps = document.getElementById(`reps-${index}`).value || 0;
+          const exElem = document.getElementById(`exercise-${index}`);
+          if (!exElem) continue;
+
+          const selectedEx = exElem.value;
+          const sets = document.getElementById(`sets-${index}`) ? document.getElementById(`sets-${index}`).value : 3;
+          const weight = document.getElementById(`weight-${index}`) ? document.getElementById(`weight-${index}`).value : 0;
+          const reps = document.getElementById(`reps-${index}`) ? document.getElementById(`reps-${index}`).value : 0;
           const rpe = rpeFeedback[index] || 'ok';
 
           logData[selectedEx] = { sets, weight, reps, rpe, unit: currentUnit };
 
-          await setDoc(doc(db, "exercise_history", selectedEx.replace(/\s+/g, '_')), {
-            weight: weight,
-            reps: reps,
-            sets: sets,
-            rpe: rpe,
-            unit: currentUnit,
-            last_updated: today
-          });
+          if (db) {
+            await setDoc(doc(db, "exercise_history", selectedEx.replace(/\s+/g, '_')), {
+              weight: weight,
+              reps: reps,
+              sets: sets,
+              rpe: rpe,
+              unit: currentUnit,
+              last_updated: today
+            });
+          }
         }
 
-        try {
-          const logName = isExtraMode ? "ExtraWorkout" : schedule[activeDayIndex].name.replace(/\s+/g, '');
+        const logName = isExtraMode ? "ExtraWorkout" : schedule[activeDayIndex].name.replace(/\s+/g, '');
+        if (db) {
           await setDoc(doc(db, "workout_logs", `${today}_${logName}`), {
             day: isExtraMode ? "Extra Workout" : schedule[activeDayIndex].name,
             duration: selectedDuration,
@@ -829,33 +801,39 @@
           });
 
           await setDoc(doc(db, "user_profile", "last_workout"), { date: today, dayName: schedule[activeDayIndex].name });
+        }
 
-          const streakEl = document.getElementById('streak-counter');
-          const newStreak = (parseInt(streakEl.innerText) || 0) + 1;
-          streakEl.innerText = newStreak;
-          await setDoc(doc(db, "user_profile", "streak"), { count: newStreak });
+        const streakEl = document.getElementById('streak-counter');
+        const newStreak = (parseInt(streakEl.innerText) || 0) + 1;
+        streakEl.innerText = newStreak;
+        if (db) await setDoc(doc(db, "user_profile", "streak"), { count: newStreak });
 
-          if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
 
-          document.getElementById('archived-banner').style.display = 'block';
-          document.getElementById('save-workout-btn').innerText = 'WORKOUT ARCHIVED FOR TODAY ✅';
+        document.getElementById('archived-banner').style.display = 'block';
+        document.getElementById('save-workout-btn').innerText = 'WORKOUT ARCHIVED FOR TODAY ✅';
 
-          showModal('🎉', 'Workout Logged!', `
-            Awesome work! Your ${selectedDuration} session logs have hit the cloud.<br><br>
-            • <b>Streak Updated:</b> ${newStreak} Sessions<br>
-            • <b>Date:</b> ${today}<br><br>
-            See you next session!
-          `);
-        } catch (e) { alert("Error saving: " + e.message); }
-      });
+        showModal('🎉', 'Workout Logged!', `
+          Awesome work! Your ${selectedDuration} session logs have been saved.<br><br>
+          • <b>Streak Updated:</b> ${newStreak} Sessions<br>
+          • <b>Date:</b> ${today}<br><br>
+          See you next session!
+        `);
+      } catch (err) {
+        alert("Save Error: " + err.message);
+      }
+    });
 
-      document.getElementById('save-weight-btn').addEventListener('click', async () => {
+    document.getElementById('save-weight-btn').addEventListener('click', async () => {
+      try {
         const weightVal = parseFloat(document.getElementById('body-weight-input').value);
         if (!weightVal) return alert("Enter weight!");
         const today = new Date().toISOString().split('T')[0];
 
-        await setDoc(doc(db, "user_profile", "body_weight"), { latest_weight: weightVal, unit: currentUnit });
-        await setDoc(doc(db, "body_weight_logs", today), { weight: weightVal, unit: currentUnit, date: today });
+        if (db) {
+          await setDoc(doc(db, "user_profile", "body_weight"), { latest_weight: weightVal, unit: currentUnit });
+          await setDoc(doc(db, "body_weight_logs", today), { weight: weightVal, unit: currentUnit, date: today });
+        }
 
         updateGoalUI(weightVal);
         weightChart.data.datasets[0].data[1] = weightVal;
@@ -863,8 +841,10 @@
 
         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
         showModal('⚖️', 'Weight Updated!', `Logged <b>${weightVal} ${currentUnit}</b> for today. Your progress toward 70kg has been recalculated.`);
-      });
-    }
+      } catch (err) {
+        alert("Weight Save Error: " + err.message);
+      }
+    });
   </script>
 </body>
 </html>
