@@ -22,10 +22,16 @@
       margin: 0; padding: 16px; background-color: var(--bg-color); color: var(--text-main);
       max-width: 500px; margin: 0 auto; padding-bottom: 90px;
     }
+    .top-header { display: flex; justify-content: space-between; align-items: flex-start; }
     h1 { color: #fff; margin: 0 0 2px 0; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
     h1 span { color: var(--accent); text-shadow: 0 0 12px var(--accent-glow); }
     .subtitle { color: var(--text-muted); font-size: 12px; margin-bottom: 12px; font-weight: 500; }
     
+    /* Unit Toggle */
+    .unit-toggle { display: flex; background: #000; border: 1px solid var(--border-color); border-radius: 8px; padding: 2px; }
+    .unit-btn { background: transparent; border: none; color: var(--text-muted); font-weight: 800; font-size: 11px; padding: 4px 8px; border-radius: 6px; cursor: pointer; }
+    .unit-btn.active { background: var(--accent-cyan); color: #000; }
+
     .status-banner { display: none; background: rgba(255, 204, 0, 0.1); border: 1px solid var(--warning); color: var(--warning); font-size: 11px; font-weight: 700; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; }
     .archived-banner { display: none; background: rgba(0, 255, 135, 0.1); border: 1px solid var(--accent); color: var(--accent); font-size: 12px; font-weight: 800; padding: 10px; border-radius: 8px; margin-bottom: 12px; text-align: center; }
 
@@ -83,12 +89,14 @@
 
     label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 4px; font-weight: 800; }
     select { width: 100%; padding: 12px; background: #080b10; color: #fff; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; font-size: 14px; font-weight: 700; }
-    .input-row { display: flex; gap: 10px; }
-    .input-group { flex: 1; }
+    
+    .input-row-3 { display: flex; gap: 8px; }
+    .input-group-3 { flex: 1; }
+
     .stepper-container { display: flex; align-items: center; background: #080b10; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
-    .stepper-btn { background: #1f2937; color: var(--accent); border: none; padding: 10px 12px; font-weight: 900; font-size: 16px; cursor: pointer; }
+    .stepper-btn { background: #1f2937; color: var(--accent); border: none; padding: 8px 10px; font-weight: 900; font-size: 14px; cursor: pointer; }
     .stepper-btn:active { background: var(--accent); color: #000; }
-    .stepper-container input { width: 100%; border: none; background: transparent; text-align: center; padding: 10px 4px; font-size: 15px; font-weight: 700; color: #fff; }
+    .stepper-container input { width: 100%; border: none; background: transparent; text-align: center; padding: 8px 2px; font-size: 14px; font-weight: 700; color: #fff; }
 
     .timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #111620; border-top: 2px solid var(--accent); padding: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.8); z-index: 99; }
     .timer-text { font-size: 16px; font-weight: 900; color: var(--accent); }
@@ -100,12 +108,22 @@
     .modal-content { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 20px; width: 100%; max-width: 360px; text-align: center; }
 
     .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-cyan)); color: #000; border: none; padding: 16px; border-radius: 10px; font-weight: 900; cursor: pointer; width: 100%; font-size: 15px; letter-spacing: 0.5px; margin-top: 10px; box-shadow: 0 4px 20px var(--accent-glow); }
+    .section-title { font-size: 14px; color: var(--text-main); margin: 20px 0 10px 0; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
   </style>
 </head>
 <body>
 
-  <h1>💪 GYM <span>TRACKER PRO</span></h1>
-  <div class="subtitle">Every-Other-Day Hypertrophy System</div>
+  <div class="top-header">
+    <div>
+      <h1>💪 GYM <span>TRACKER PRO</span></h1>
+      <div class="subtitle">Every-Other-Day Hypertrophy System</div>
+    </div>
+    <div class="unit-toggle">
+      <button class="unit-btn active" id="unit-kg" onclick="setUnit('kg')">KG</button>
+      <button class="unit-btn" id="unit-lbs" onclick="setUnit('lbs')">LBS</button>
+    </div>
+  </div>
+
   <div class="streak-badge">🔥 <span id="streak-counter">0</span>-Session Streak Active</div>
 
   <div class="status-banner" id="missed-day-banner">⚠️ Missed session detected! Schedule shifted to keep workouts in sequence.</div>
@@ -115,9 +133,9 @@
     <div class="card-header"><span class="target-tag">Mass Gain Journey</span></div>
     <div class="goal-tracker">
       <div class="goal-stats">
-        <span>Start: <b>65.1 kg</b></span>
+        <span>Start: <b id="start-weight-disp">65.1 kg</b></span>
         <span id="current-weight-label">Current: <b>65.1 kg</b></span>
-        <span>Goal: <b>70.0 kg</b></span>
+        <span>Goal: <b id="goal-weight-disp">70.0 kg</b></span>
       </div>
       <div class="progress-bg">
         <div class="progress-fill" id="goal-progress-bar"></div>
@@ -127,10 +145,10 @@
       <summary>📈 View Weight Chart</summary>
       <div style="margin-top: 10px;"><canvas id="weightChart"></canvas></div>
     </details>
-    <div class="input-row" style="align-items: flex-end; margin-top:10px;">
-      <div class="input-group">
-        <label>Log Weight (kg)</label>
-        <input type="number" step="0.1" id="body-weight-input" value="65.1">
+    <div class="input-row-3" style="align-items: flex-end; margin-top:10px;">
+      <div class="input-group-3" style="flex:2;">
+        <label id="log-weight-label">Log Weight (kg)</label>
+        <input type="number" step="0.1" id="body-weight-input" value="65.1" style="width:100%; padding:10px; background:#080b10; border:1px solid var(--border-color); color:#fff; border-radius:8px;">
       </div>
       <button class="btn-primary" id="save-weight-btn" style="margin: 0; width: auto; padding: 12px 18px;">Update</button>
     </div>
@@ -163,6 +181,27 @@
   </div>
 
   <div id="workout-container">Loading routine...</div>
+
+  <!-- Post-Workout Cool-Down & Recovery -->
+  <div class="section-title">🧘 Post-Workout Recovery</div>
+  <div class="card">
+    <details open>
+      <summary>🧘 Cool-Down Stretches (3 Mins)</summary>
+      <div style="margin-top:6px;">
+        <div class="checklist-item"><input type="checkbox"> Hamstring & calf stretch (30s per leg)</div>
+        <div class="checklist-item"><input type="checkbox"> Doorway chest stretch (30s)</div>
+        <div class="checklist-item"><input type="checkbox"> Child's Pose lat stretch (60s)</div>
+      </div>
+    </details>
+    <details>
+      <summary>🥪 Post-Workout Fuel Options</summary>
+      <div class="form-tips">
+        • Whey shake + bagel or chicken & rice.<br>
+        • 3 eggs + toast + avocado.<br>
+        • Greek yogurt + honey + granola.
+      </div>
+    </details>
+  </div>
 
   <button class="btn-primary" id="save-workout-btn">SAVE WORKOUT LOG</button>
 
@@ -203,12 +242,29 @@
       db = getFirestore(app);
     } catch (e) { console.log("Firebase initialized in preview mode."); }
 
-    const START_WEIGHT = 65.1;
-    const GOAL_WEIGHT = 70.0;
+    let currentUnit = "kg"; // "kg" or "lbs"
+    const START_WEIGHT_KG = 65.1;
+    const GOAL_WEIGHT_KG = 70.0;
     let selectedDuration = "45m";
     let timerInterval;
     let rpeFeedback = {};
     let previousPrs = {};
+
+    window.setUnit = function(unit) {
+      currentUnit = unit;
+      document.getElementById('unit-kg').classList.toggle('active', unit === 'kg');
+      document.getElementById('unit-lbs').classList.toggle('active', unit === 'lbs');
+
+      const mult = unit === 'lbs' ? 2.20462 : 1;
+      document.getElementById('start-weight-disp').innerText = `${(START_WEIGHT_KG * mult).toFixed(1)} ${unit}`;
+      document.getElementById('goal-weight-disp').innerText = `${(GOAL_WEIGHT_KG * mult).toFixed(1)} ${unit}`;
+      document.getElementById('log-weight-label').innerText = `Log Weight (${unit.toUpperCase()})`;
+
+      const currInput = parseFloat(document.getElementById('body-weight-input').value) || START_WEIGHT_KG;
+      document.getElementById('body-weight-input').value = (unit === 'lbs' ? (currInput * 2.20462) : (currInput / 2.20462)).toFixed(1);
+
+      renderExercises();
+    };
 
     window.startTimer = function(seconds) {
       clearInterval(timerInterval);
@@ -258,7 +314,7 @@
 
       if (currentWeight > lastPr && lastPr > 0) {
         prBanner.style.display = "block";
-        prBanner.innerText = `🎉 NEW PR! (+${(currentWeight - lastPr).toFixed(1)} kg)`;
+        prBanner.innerText = `🎉 NEW PR! (+${(currentWeight - lastPr).toFixed(1)} ${currentUnit})`;
       } else {
         prBanner.style.display = "none";
       }
@@ -270,41 +326,41 @@
       const resultsEl = document.getElementById('modal-results');
       
       titleEl.innerText = "🔥 Warm-Up Calculator";
-      const set1 = Math.max(20, (target * 0.5)).toFixed(1);
-      const set2 = Math.max(20, (target * 0.75)).toFixed(1);
+      const set1 = Math.max(10, (target * 0.5)).toFixed(1);
+      const set2 = Math.max(15, (target * 0.75)).toFixed(1);
 
       resultsEl.innerHTML = `
-        Target Working Weight: <b>${target} kg</b><br><br>
-        • <b>Set 1:</b> ${set1} kg × 10 reps<br>
-        • <b>Set 2:</b> ${set2} kg × 5 reps<br>
-        • <b>Working Sets:</b> ${target} kg × 8–10 reps
+        Target Working Weight: <b>${target} ${currentUnit}</b><br><br>
+        • <b>Set 1:</b> ${set1} ${currentUnit} × 10 reps<br>
+        • <b>Set 2:</b> ${set2} ${currentUnit} × 5 reps<br>
+        • <b>Working Sets:</b> ${target} ${currentUnit} × 8–10 reps
       `;
       document.getElementById('tools-modal').style.display = "flex";
     };
 
     window.openPlateCalc = function(weight) {
-      const barWeight = 20;
-      const target = parseFloat(weight) || 20;
+      const barWeight = currentUnit === 'lbs' ? 45 : 20;
+      const target = parseFloat(weight) || barWeight;
       const titleEl = document.getElementById('modal-title');
       const resultsEl = document.getElementById('modal-results');
       
       titleEl.innerText = "🧮 Barbell Plate Calculator";
       if (target < barWeight) {
-        resultsEl.innerHTML = "Weight is less than empty 20kg Olympic barbell!";
+        resultsEl.innerHTML = `Weight is less than empty ${barWeight} ${currentUnit} Olympic barbell!`;
       } else {
         let sideWeight = (target - barWeight) / 2;
-        const plates = [20, 15, 10, 5, 2.5, 1.25];
+        const plates = currentUnit === 'lbs' ? [45, 35, 25, 10, 5, 2.5] : [20, 15, 10, 5, 2.5, 1.25];
         let breakdown = [];
         
         plates.forEach(p => {
           let count = Math.floor(sideWeight / p);
           if (count > 0) {
-            breakdown.push(`<b>${count}x ${p}kg</b> plate`);
+            breakdown.push(`<b>${count}x ${p}${currentUnit}</b> plate`);
             sideWeight -= count * p;
           }
         });
 
-        resultsEl.innerHTML = breakdown.length ? `Per side (on a 20kg bar):<br>${breakdown.join('<br>')}` : "Empty 20kg Barbell!";
+        resultsEl.innerHTML = breakdown.length ? `Per side (on a ${barWeight}${currentUnit} bar):<br>${breakdown.join('<br>')}` : `Empty ${barWeight}${currentUnit} Barbell!`;
       }
       document.getElementById('tools-modal').style.display = "flex";
     };
@@ -316,15 +372,18 @@
     window.adjustVal = function(id, delta) {
       const input = document.getElementById(id);
       let val = parseFloat(input.value) || 0;
-      input.value = Math.max(0, val + delta).toFixed(delta % 1 === 0 ? 0 : 1);
+      const step = currentUnit === 'lbs' ? delta * 2.2 : delta;
+      input.value = Math.max(0, val + step).toFixed(1);
       const index = id.split('-')[1];
       checkPr(index);
     };
 
     function updateGoalUI(currentWeight) {
-      document.getElementById('current-weight-label').innerHTML = `Current: <b>${currentWeight.toFixed(1)} kg</b>`;
-      const gained = Math.max(0, currentWeight - START_WEIGHT);
-      const totalToGain = GOAL_WEIGHT - START_WEIGHT;
+      document.getElementById('current-weight-label').innerHTML = `Current: <b>${currentWeight.toFixed(1)} ${currentUnit}</b>`;
+      const startW = currentUnit === 'lbs' ? START_WEIGHT_KG * 2.20462 : START_WEIGHT_KG;
+      const goalW = currentUnit === 'lbs' ? GOAL_WEIGHT_KG * 2.20462 : GOAL_WEIGHT_KG;
+      const gained = Math.max(0, currentWeight - startW);
+      const totalToGain = goalW - startW;
       const progressPct = Math.min(100, (gained / totalToGain) * 100);
       document.getElementById('goal-progress-bar').style.width = `${progressPct}%`;
     }
@@ -445,9 +504,8 @@
 
       const recBox = document.getElementById(`rec-box-${index}`);
       const weightInput = document.getElementById(`weight-${index}`);
-      const repsInput = document.getElementById(`reps-${index}`);
 
-      let targetWeight = data.defaultWeight;
+      let targetWeight = currentUnit === 'lbs' ? (data.defaultWeight * 2.20462) : data.defaultWeight;
 
       if (db) {
         try {
@@ -456,32 +514,32 @@
           
           if (docSnap.exists()) {
             const lastData = docSnap.data();
-            const lastWeight = parseFloat(lastData.weight) || data.defaultWeight;
+            let lastWeight = parseFloat(lastData.weight) || data.defaultWeight;
+            if (currentUnit === 'lbs') lastWeight *= 2.20462;
             const lastRpe = lastData.rpe || 'ok';
             previousPrs[selectedEx] = lastWeight;
 
             if (lastRpe === 'easy') {
-              targetWeight = lastWeight + 2.5;
-              recBox.innerHTML = `🎯 <b>Smart Rec (Felt Easy):</b> Increase to <b>${targetWeight} kg</b> × 8 reps.`;
+              targetWeight = lastWeight + (currentUnit === 'lbs' ? 5 : 2.5);
+              recBox.innerHTML = `🎯 <b>Smart Rec (Felt Easy):</b> Increase to <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8 reps.`;
             } else if (lastRpe === 'hard') {
               targetWeight = lastWeight;
-              recBox.innerHTML = `🎯 <b>Smart Rec (Felt Hard):</b> Hold at <b>${targetWeight} kg</b> & focus on strict form.`;
+              recBox.innerHTML = `🎯 <b>Smart Rec (Felt Hard):</b> Hold at <b>${targetWeight.toFixed(1)} ${currentUnit}</b> & focus on form.`;
             } else {
               targetWeight = lastWeight;
-              recBox.innerHTML = `🎯 <b>Smart Rec:</b> Continue at <b>${targetWeight} kg</b> × 8–10 reps.`;
+              recBox.innerHTML = `🎯 <b>Smart Rec:</b> Continue at <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
             }
           } else {
-            recBox.innerHTML = `🎯 <b>First Time Target:</b> Start with <b>${targetWeight} kg</b> × 8–10 reps.`;
+            recBox.innerHTML = `🎯 <b>First Time Target:</b> Start with <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
           }
         } catch (err) {
-          recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight} kg</b> × 8–10 reps.`;
+          recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
         }
       } else {
-        recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight} kg</b> × 8–10 reps.`;
+        recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
       }
 
-      weightInput.value = targetWeight;
-      repsInput.value = 8;
+      weightInput.value = targetWeight.toFixed(1);
     };
 
     function renderExercises() {
@@ -514,20 +572,28 @@
               <summary>📖 View Form & Safety Cues</summary>
               <div class="form-tips" id="tips-${index}">${defaultData.tips}</div>
             </details>
-            <div class="input-row">
-              <div class="input-group">
-                <label>Weight (kg)</label>
+            <div class="input-row-3">
+              <div class="input-group-3">
+                <label>Sets</label>
+                <div class="stepper-container">
+                  <button class="stepper-btn" onclick="adjustVal('sets-${index}', -1)">-</button>
+                  <input type="number" id="sets-${index}" value="3">
+                  <button class="stepper-btn" onclick="adjustVal('sets-${index}', 1)">+</button>
+                </div>
+              </div>
+              <div class="input-group-3">
+                <label>Weight (${currentUnit})</label>
                 <div class="stepper-container">
                   <button class="stepper-btn" onclick="adjustVal('weight-${index}', -2.5)">-</button>
                   <input type="number" id="weight-${index}" oninput="checkPr(${index})">
                   <button class="stepper-btn" onclick="adjustVal('weight-${index}', 2.5)">+</button>
                 </div>
               </div>
-              <div class="input-group">
-                <label>Reps Done</label>
+              <div class="input-group-3">
+                <label>Reps</label>
                 <div class="stepper-container">
                   <button class="stepper-btn" onclick="adjustVal('reps-${index}', -1)">-</button>
-                  <input type="number" id="reps-${index}">
+                  <input type="number" id="reps-${index}" value="8">
                   <button class="stepper-btn" onclick="adjustVal('reps-${index}', 1)">+</button>
                 </div>
               </div>
@@ -555,7 +621,7 @@
 
     renderTabs();
     renderExercises();
-    updateGoalUI(START_WEIGHT);
+    updateGoalUI(START_WEIGHT_KG);
 
     const ctx = document.getElementById('weightChart').getContext('2d');
     const weightChart = new Chart(ctx, {
@@ -563,7 +629,7 @@
       data: {
         labels: ['Start', 'Today'],
         datasets: [{
-          label: 'Body Weight (kg)',
+          label: 'Body Weight',
           data: [65.1, 65.1],
           borderColor: '#00ff87',
           backgroundColor: 'rgba(0, 255, 135, 0.1)',
@@ -573,7 +639,7 @@
       },
       options: {
         scales: {
-          y: { min: 64, max: 71, grid: { color: '#1f2937' }, ticks: { color: '#9ca3af' } },
+          y: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af' } },
           x: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af' } }
         },
         plugins: { legend: { display: false } }
@@ -585,31 +651,35 @@
         try {
           const today = new Date().toISOString().split('T')[0];
 
-          // Check for missed day / calendar gaps
-          const lastLogRef = doc(db, "user_profile", "last_workout");
-          const lastLogSnap = await getDoc(lastLogRef);
+          // Persistent Reload Check
+          const logName = isExtraMode ? "ExtraWorkout" : schedule[activeDayIndex].name.replace(/\s+/g, '');
+          const logRef = doc(db, "workout_logs", `${today}_${logName}`);
+          const logSnap = await getDoc(logRef);
 
-          if (lastLogSnap.exists()) {
-            const lastDateStr = lastLogSnap.data().date;
-            const lastDate = new Date(lastDateStr);
-            const currentDate = new Date(today);
-            const diffDays = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
-
-            if (diffDays > 2) {
-              document.getElementById('missed-day-banner').style.display = 'block';
-            }
-
-            // Check if today is already completed
-            if (lastDateStr === today) {
-              document.getElementById('archived-banner').style.display = 'block';
-              document.getElementById('save-workout-btn').innerText = 'WORKOUT ARCHIVED FOR TODAY ✅';
-            }
+          if (logSnap.exists()) {
+            document.getElementById('archived-banner').style.display = 'block';
+            document.getElementById('save-workout-btn').innerText = 'WORKOUT ARCHIVED FOR TODAY ✅';
+            const savedExercises = logSnap.data().exercises || {};
+            
+            setTimeout(() => {
+              Object.keys(savedExercises).forEach((exName, idx) => {
+                const exInput = document.getElementById(`exercise-${idx}`);
+                if (exInput) {
+                  exInput.value = exName;
+                  document.getElementById(`sets-${idx}`).value = savedExercises[exName].sets || 3;
+                  document.getElementById(`weight-${idx}`).value = savedExercises[exName].weight || 0;
+                  document.getElementById(`reps-${idx}`).value = savedExercises[exName].reps || 8;
+                  document.getElementById(`complete-check-${idx}`).checked = true;
+                  toggleExerciseComplete(idx);
+                }
+              });
+            }, 500);
           }
 
           const weightRef = doc(db, "user_profile", "body_weight");
           const weightSnap = await getDoc(weightRef);
           if (weightSnap.exists()) {
-            const currentW = parseFloat(weightSnap.data().latest_weight) || START_WEIGHT;
+            const currentW = parseFloat(weightSnap.data().latest_weight) || START_WEIGHT_KG;
             document.getElementById('body-weight-input').value = currentW;
             updateGoalUI(currentW);
             weightChart.data.datasets[0].data[1] = currentW;
@@ -631,16 +701,19 @@
 
         for (let index = 0; index < currentTemplate.length; index++) {
           const selectedEx = document.getElementById(`exercise-${index}`).value;
+          const sets = document.getElementById(`sets-${index}`).value || 3;
           const weight = document.getElementById(`weight-${index}`).value || 0;
           const reps = document.getElementById(`reps-${index}`).value || 0;
           const rpe = rpeFeedback[index] || 'ok';
 
-          logData[selectedEx] = { weight, reps, rpe };
+          logData[selectedEx] = { sets, weight, reps, rpe, unit: currentUnit };
 
           await setDoc(doc(db, "exercise_history", selectedEx.replace(/\s+/g, '_')), {
             weight: weight,
             reps: reps,
+            sets: sets,
             rpe: rpe,
+            unit: currentUnit,
             last_updated: today
           });
         }
@@ -672,13 +745,13 @@
         if (!weightVal) return alert("Enter weight!");
         const today = new Date().toISOString().split('T')[0];
 
-        await setDoc(doc(db, "user_profile", "body_weight"), { latest_weight: weightVal });
-        await setDoc(doc(db, "body_weight_logs", today), { weight_kg: weightVal, date: today });
+        await setDoc(doc(db, "user_profile", "body_weight"), { latest_weight: weightVal, unit: currentUnit });
+        await setDoc(doc(db, "body_weight_logs", today), { weight: weightVal, unit: currentUnit, date: today });
 
         updateGoalUI(weightVal);
         weightChart.data.datasets[0].data[1] = weightVal;
         weightChart.update();
-        alert(`Logged ${weightVal} kg! Goal progress updated.`);
+        alert(`Logged ${weightVal} ${currentUnit}! Goal progress updated.`);
       });
     }
   </script>
