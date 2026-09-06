@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Gym Tracker</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; margin: 20px; background: #121212; color: #fff; }
+    h1 { color: #00e676; margin-bottom: 5px; }
+    .subtext { color: #aaa; margin-bottom: 20px; font-size: 14px; }
+    .card { background: #1e1e1e; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #333; }
+    .card h3 { margin: 0 0 5px 0; color: #fff; }
+    .swap { color: #888; font-size: 13px; margin-bottom: 10px; display: block; }
+    input { padding: 10px; margin: 5px 0; width: 45%; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; box-sizing: border-box; }
+    button { background: #00e676; color: #000; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
+    button:active { background: #00b359; }
+  </style>
+</head>
+<body>
+
+  <h1>💪 Gym Tracker</h1>
+  <div class="subtext">Full Body Day A Routine</div>
+  <div id="workout-container">Loading routine...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // PASTE YOUR FIREBASE CONFIG KEYS HERE
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const dayA = [
+      { name: "Barbell Back Squat", swap: "Leg Press Machine" },
+      { name: "Barbell Bench Press", swap: "Dumbbell Press" },
+      { name: "Lat Pulldown", swap: "Assisted Pull-Ups" },
+      { name: "DB Overhead Press", swap: "Shoulder Press Machine" },
+      { name: "Plank", swap: "Ab Wheel Rollout" }
+    ];
+
+    const container = document.getElementById('workout-container');
+    container.innerHTML = "";
+
+    dayA.forEach((ex, index) => {
+      container.innerHTML += `
+        <div class="card">
+          <h3>${ex.name}</h3>
+          <span class="swap">Alternative: ${ex.swap}</span>
+          <input type="number" id="weight-${index}" placeholder="Weight (kg)">
+          <input type="number" id="reps-${index}" placeholder="Reps">
+        </div>
+      `;
+    });
+
+    container.innerHTML += `<button id="save-btn">Save Workout to Firebase</button>`;
+
+    document.getElementById('save-btn').addEventListener('click', async () => {
+      const logData = {};
+      dayA.forEach((ex, index) => {
+        logData[ex.name] = {
+          weight: document.getElementById(`weight-${index}`).value || 0,
+          reps: document.getElementById(`reps-${index}`).value || 0
+        };
+      });
+
+      const today = new Date().toISOString().split('T')[0];
+      try {
+        await setDoc(doc(db, "logs", today), logData);
+        alert("Workout saved successfully!");
+      } catch (e) {
+        alert("Error saving: " + e.message);
+      }
+    });
+  </script>
+</body>
+</html>
