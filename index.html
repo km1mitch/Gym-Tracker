@@ -45,11 +45,13 @@
     .progress-bg { background: #000; border-radius: 10px; height: 12px; border: 1px solid var(--border-color); overflow: hidden; padding: 2px; }
     .progress-fill { background: linear-gradient(90deg, var(--accent), var(--accent-cyan)); height: 100%; width: 0%; border-radius: 8px; transition: width 0.5s ease-in-out; }
 
-    /* PR Banner Style */
     .pr-banner { display: none; background: linear-gradient(135deg, #ff0055, #ffcc00); color: #000; font-weight: 900; font-size: 12px; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; animation: pulse 1s infinite alternate; }
     @keyframes pulse { 0% { transform: scale(0.98); } 100% { transform: scale(1.02); } }
 
-    .img-guide { width: 100%; height: 180px; border-radius: 10px; object-fit: cover; margin: 10px 0; border: 1px solid var(--border-color); background: #000; }
+    /* Animated SVG Container */
+    .anim-container { width: 100%; height: 150px; background: #000; border-radius: 10px; border: 1px solid var(--border-color); margin: 10px 0; display: flex; align-items: center; justify-content: center; }
+    .anim-svg { width: 100%; height: 100%; }
+
     details { margin-bottom: 8px; font-size: 13px; color: var(--text-muted); }
     summary { cursor: pointer; color: var(--accent-cyan); font-size: 12px; font-weight: 700; margin-bottom: 4px; }
     .form-tips { background: #080b10; padding: 12px; border-radius: 8px; margin-top: 6px; border-left: 3px solid var(--accent-cyan); line-height: 1.5; font-size: 12px; }
@@ -94,7 +96,6 @@
     .modal-content { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 20px; width: 100%; max-width: 360px; text-align: center; }
 
     .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-cyan)); color: #000; border: none; padding: 16px; border-radius: 10px; font-weight: 900; cursor: pointer; width: 100%; font-size: 15px; letter-spacing: 0.5px; margin-top: 10px; box-shadow: 0 4px 20px var(--accent-glow); }
-    .section-title { font-size: 15px; color: var(--text-main); margin: 24px 0 10px 0; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
   </style>
 </head>
 <body>
@@ -167,7 +168,6 @@
     </div>
   </div>
 
-  <!-- Tools Modal -->
   <div class="modal" id="tools-modal">
     <div class="modal-content">
       <h3 style="color:var(--accent); margin-top:0;" id="modal-title">Tool</h3>
@@ -202,6 +202,21 @@
     let timerInterval;
     let rpeFeedback = {};
     let previousPrs = {};
+
+    // SVG Animation Generator
+    function getExerciseAnimation(type) {
+      if (type.includes("Squat")) {
+        return `<svg class="anim-svg" viewBox="0 0 200 120"><style>@keyframes squat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(30px);} } .bar{animation:squat 2.5s ease-in-out infinite;} .body{animation:squat 2.5s ease-in-out infinite;}</style><line x1="40" y1="20" x2="160" y2="20" stroke="#00ff87" stroke-width="6" class="bar"/><circle cx="100" cy="35" r="12" fill="#60efff" class="body"/><path d="M100 47 L100 80 L80 110 M100 80 L120 110" stroke="#60efff" stroke-width="6" stroke-linecap="round" fill="none" class="body"/></svg>`;
+      } else if (type.includes("Bench") || type.includes("Press")) {
+        return `<svg class="anim-svg" viewBox="0 0 200 120"><style>@keyframes press { 0%,100%{transform:translateY(0);} 50%{transform:translateY(35px);} } .bar{animation:press 2s ease-in-out infinite;}</style><rect x="50" y="85" width="100" height="10" fill="#1f2937"/><circle cx="100" cy="70" r="10" fill="#60efff"/><line x1="40" y1="35" x2="160" y2="35" stroke="#00ff87" stroke-width="6" class="bar"/></svg>`;
+      } else if (type.includes("Pulldown") || type.includes("Pull")) {
+        return `<svg class="anim-svg" viewBox="0 0 200 120"><style>@keyframes pulldown { 0%,100%{transform:translateY(0);} 50%{transform:translateY(40px);} } .bar{animation:pulldown 2.2s ease-in-out infinite;}</style><line x1="30" y1="15" x2="170" y2="15" stroke="#00ff87" stroke-width="6" class="bar"/><circle cx="100" cy="75" r="12" fill="#60efff"/></svg>`;
+      } else if (type.includes("Deadlift") || type.includes("Row")) {
+        return `<svg class="anim-svg" viewBox="0 0 200 120"><style>@keyframes row { 0%,100%{transform:translateY(30px);} 50%{transform:translateY(0px);} } .bar{animation:row 2s ease-in-out infinite;}</style><line x1="40" y1="50" x2="160" y2="50" stroke="#00ff87" stroke-width="6" class="bar"/><circle cx="100" cy="30" r="12" fill="#60efff"/></svg>`;
+      } else {
+        return `<svg class="anim-svg" viewBox="0 0 200 120"><style>@keyframes lift { 0%,100%{transform:translateY(20px);} 50%{transform:translateY(-10px);} } .bar{animation:lift 2s ease-in-out infinite;}</style><circle cx="100" cy="50" r="12" fill="#60efff"/><line x1="50" y1="40" x2="150" y2="40" stroke="#00ff87" stroke-width="6" class="bar"/></svg>`;
+      }
+    }
 
     window.startTimer = function(seconds) {
       clearInterval(timerInterval);
@@ -267,9 +282,9 @@
       const set2 = Math.max(20, (target * 0.75)).toFixed(1);
 
       resultsEl.innerHTML = `
-        Target Weight: <b>${target} kg</b><br><br>
-        • <b>Set 1:</b> ${set1} kg × 10 reps (Light)<br>
-        • <b>Set 2:</b> ${set2} kg × 5 reps (Moderate)<br>
+        Target Working Weight: <b>${target} kg</b><br><br>
+        • <b>Set 1:</b> ${set1} kg × 10 reps<br>
+        • <b>Set 2:</b> ${set2} kg × 5 reps<br>
         • <b>Working Sets:</b> ${target} kg × 8–10 reps
       `;
       document.getElementById('tools-modal').style.display = "flex";
@@ -323,18 +338,18 @@
     }
 
     const exerciseData = {
-      "Barbell Back Squat": { isBarbell: true, defaultWeight: 30, img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=600&q=80", tips: "Chest up, knees track over toes, squat parallel." },
-      "Goblet Squat (DB/KB)": { isBarbell: false, defaultWeight: 12, img: "https://images.unsplash.com/photo-1566241142559-40e1dab266c6?auto=format&fit=crop&w=600&q=80", tips: "Hold weight close to chest, stay upright." },
-      "Leg Press Machine": { isBarbell: false, defaultWeight: 50, img: "https://images.unsplash.com/photo-1534367507873-d2d7e24c797f?auto=format&fit=crop&w=600&q=80", tips: "Lower smoothly, keep lower back flat against seat." },
-      "Barbell Bench Press": { isBarbell: true, defaultWeight: 30, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Retract shoulder blades, lower bar to mid-chest." },
-      "Flat Dumbbell Press": { isBarbell: false, defaultWeight: 10, img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80", tips: "Elbows tucked at 45°, press straight upward." },
-      "Lat Pulldown": { isBarbell: false, defaultWeight: 25, img: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&q=80", tips: "Pull bar down to upper chest, drive elbows down." },
-      "Conventional Deadlift": { isBarbell: true, defaultWeight: 40, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Hinge at hips, keep bar against shins, chest high." },
-      "Incline Dumbbell Press": { isBarbell: false, defaultWeight: 10, img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Bench at 30 degrees, press upward focusing on upper chest." },
-      "Seated Cable Row": { isBarbell: false, defaultWeight: 25, img: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80", tips: "Pull handle toward navel, squeeze shoulder blades." },
-      "Dumbbell Overhead Press": { isBarbell: false, defaultWeight: 8, img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Brace core, press dumbbells straight up overhead." },
-      "Cable Face Pulls": { isBarbell: false, defaultWeight: 15, img: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80", tips: "Pull rope to face height, flare elbows outward." },
-      "Dumbbell Lateral Raise": { isBarbell: false, defaultWeight: 6, img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Slight elbow bend, raise weights to shoulder level." }
+      "Barbell Back Squat": { isBarbell: true, defaultWeight: 30, tips: "Chest up, knees track over toes, squat parallel." },
+      "Goblet Squat (DB/KB)": { isBarbell: false, defaultWeight: 12, tips: "Hold weight close to chest, stay upright." },
+      "Leg Press Machine": { isBarbell: false, defaultWeight: 50, tips: "Lower smoothly, keep lower back flat against seat." },
+      "Barbell Bench Press": { isBarbell: true, defaultWeight: 30, tips: "Retract shoulder blades, lower bar to mid-chest." },
+      "Flat Dumbbell Press": { isBarbell: false, defaultWeight: 10, tips: "Elbows tucked at 45°, press straight upward." },
+      "Lat Pulldown": { isBarbell: false, defaultWeight: 25, tips: "Pull bar down to upper chest, drive elbows down." },
+      "Conventional Deadlift": { isBarbell: true, defaultWeight: 40, tips: "Hinge at hips, keep bar against shins, chest high." },
+      "Incline Dumbbell Press": { isBarbell: false, defaultWeight: 10, tips: "Bench at 30 degrees, press upward focusing on upper chest." },
+      "Seated Cable Row": { isBarbell: false, defaultWeight: 25, tips: "Pull handle toward navel, squeeze shoulder blades." },
+      "Dumbbell Overhead Press": { isBarbell: false, defaultWeight: 8, tips: "Brace core, press dumbbells straight up overhead." },
+      "Cable Face Pulls": { isBarbell: false, defaultWeight: 15, tips: "Pull rope to face height, flare elbows outward." },
+      "Dumbbell Lateral Raise": { isBarbell: false, defaultWeight: 6, tips: "Slight elbow bend, raise weights to shoulder level." }
     };
 
     const routineData = {
@@ -409,9 +424,9 @@
 
     window.fetchRecommendation = async function(index) {
       const selectedEx = document.getElementById(`exercise-${index}`).value;
-      const data = exerciseData[selectedEx] || { isBarbell: false, defaultWeight: 20, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Maintain strict form." };
+      const data = exerciseData[selectedEx] || { isBarbell: false, defaultWeight: 20, tips: "Maintain strict form." };
       
-      document.getElementById(`img-${index}`).src = data.img;
+      document.getElementById(`anim-box-${index}`).innerHTML = getExerciseAnimation(selectedEx);
       document.getElementById(`tips-${index}`).innerText = data.tips;
 
       const calcContainer = document.getElementById(`tool-btns-container-${index}`);
@@ -469,7 +484,7 @@
       currentTemplate.forEach((ex, index) => {
         const optionsHTML = ex.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
         const defaultEx = ex.options[0];
-        const defaultData = exerciseData[defaultEx] || { img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Keep core tight." };
+        const defaultData = exerciseData[defaultEx] || { tips: "Keep core tight." };
 
         container.innerHTML += `
           <div class="card" id="card-${index}">
@@ -480,7 +495,8 @@
             <div class="recommendation-box" id="rec-box-${index}">Calculating target recommendation...</div>
             <div id="tool-btns-container-${index}"></div>
 
-            <img id="img-${index}" class="img-guide" src="${defaultData.img}" alt="Exercise Guide Image">
+            <div class="anim-container" id="anim-box-${index}">${getExerciseAnimation(defaultEx)}</div>
+            
             <details>
               <summary>📖 View Form & Safety Cues</summary>
               <div class="form-tips" id="tips-${index}">${defaultData.tips}</div>
