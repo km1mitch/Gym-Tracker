@@ -3,65 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Gym Tracker Pro</title>
+  <title>Smart Gym Tracker - Cyber Edition</title>
   <style>
     :root {
-      --bg-color: #0d1117;
-      --card-bg: #161b22;
-      --border-color: #30363d;
-      --accent: #00e676;
-      --accent-glow: rgba(0, 230, 118, 0.15);
-      --text-main: #f0f6fc;
-      --text-muted: #8b949e;
+      --bg-color: #080b10;
+      --card-bg: #111620;
+      --border-color: #1f2937;
+      --accent: #00ff87;
+      --accent-glow: rgba(0, 255, 135, 0.2);
+      --accent-cyan: #60efff;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 0; padding: 16px; background-color: var(--bg-color); color: var(--text-main);
-      max-width: 500px; margin: 0 auto; padding-bottom: 40px;
+      max-width: 500px; margin: 0 auto; padding-bottom: 50px;
     }
-    h1 { color: var(--accent); margin: 0 0 2px 0; font-size: 22px; font-weight: 800; }
-    .subtitle { color: var(--text-muted); font-size: 12px; margin-bottom: 16px; }
+    h1 { color: #fff; margin: 0 0 2px 0; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
+    h1 span { color: var(--accent); text-shadow: 0 0 12px var(--accent-glow); }
+    .subtitle { color: var(--text-muted); font-size: 12px; margin-bottom: 16px; font-weight: 500; }
     
-    .tabs { display: flex; gap: 6px; margin-bottom: 16px; background: #161b22; padding: 4px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; }
-    .tab-btn { flex: 1; padding: 10px 6px; background: transparent; color: var(--text-muted); border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; text-align: center; white-space: nowrap; }
-    .tab-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 10px var(--accent-glow); }
-    
-    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .target-tag { background: rgba(0, 230, 118, 0.1); color: var(--accent); font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 600; text-transform: uppercase; }
-    
-    /* Progress Bar Styles */
-    .goal-tracker { margin-bottom: 12px; }
-    .goal-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
-    .progress-bg { background: #21262d; border-radius: 10px; height: 12px; border: 1px solid var(--border-color); overflow: hidden; }
-    .progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.4s ease-in-out; }
+    /* Duration Toggle */
+    .duration-toggle { display: flex; background: #000; padding: 4px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 16px; }
+    .toggle-btn { flex: 1; padding: 10px; background: transparent; color: var(--text-muted); border: none; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 12px; transition: 0.3s; text-align: center; }
+    .toggle-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent-glow); }
 
-    .visual-guide { width: 100%; height: 130px; border-radius: 8px; object-fit: cover; margin: 8px 0; border: 1px solid var(--border-color); background: #21262d; }
-    details { margin-bottom: 8px; font-size: 13px; color: var(--text-muted); }
-    summary { cursor: pointer; color: var(--accent); font-size: 12px; font-weight: 600; margin-bottom: 4px; }
-    .form-tips { background: #0d1117; padding: 10px; border-radius: 6px; margin-top: 6px; border-left: 3px solid var(--accent); line-height: 1.4; font-size: 12px; }
+    /* Day Selector Tabs */
+    .tabs { display: flex; gap: 6px; margin-bottom: 16px; background: var(--card-bg); padding: 4px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; }
+    .tab-btn { flex: 1; padding: 10px 6px; background: transparent; color: var(--text-muted); border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; text-align: center; white-space: nowrap; }
+    .tab-btn.active { background: #1f2937; color: var(--accent); border: 1px solid var(--accent); }
     
-    .checklist-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: #c9d1d9; }
+    /* Cards */
+    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); position: relative; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .target-tag { background: rgba(0, 255, 135, 0.1); color: var(--accent); font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(0, 255, 135, 0.2); }
+    
+    /* Goal Tracker */
+    .goal-tracker { margin-bottom: 12px; }
+    .goal-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
+    .progress-bg { background: #000; border-radius: 10px; height: 12px; border: 1px solid var(--border-color); overflow: hidden; padding: 2px; }
+    .progress-fill { background: linear-gradient(90deg, var(--accent), var(--accent-cyan)); height: 100%; width: 0%; border-radius: 8px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    /* Animated GIF Guide */
+    .gif-guide { width: 100%; height: 180px; border-radius: 10px; object-fit: cover; margin: 10px 0; border: 1px solid var(--border-color); background: #000; }
+    details { margin-bottom: 8px; font-size: 13px; color: var(--text-muted); }
+    summary { cursor: pointer; color: var(--accent-cyan); font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+    .form-tips { background: #080b10; padding: 12px; border-radius: 8px; margin-top: 6px; border-left: 3px solid var(--accent-cyan); line-height: 1.5; font-size: 12px; }
+    
+    .checklist-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: #d1d5db; }
     .checklist-item input { width: auto; margin: 0; }
 
-    .recommendation-box { background: rgba(0, 230, 118, 0.12); border: 1px solid var(--accent); border-radius: 8px; padding: 10px; font-size: 13px; color: #fff; margin-bottom: 12px; }
+    .recommendation-box { background: rgba(0, 255, 135, 0.08); border: 1px dashed var(--accent); border-radius: 8px; padding: 10px; font-size: 12px; color: #fff; margin-bottom: 12px; }
     .recommendation-box b { color: var(--accent); }
 
-    label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
-    select { width: 100%; padding: 10px; background: #21262d; color: #fff; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
+    label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 4px; font-weight: 800; }
+    select { width: 100%; padding: 12px; background: #080b10; color: #fff; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; font-size: 14px; font-weight: 700; }
     .input-row { display: flex; gap: 10px; }
     .input-group { flex: 1; }
-    input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: #21262d; color: #fff; box-sizing: border-box; font-size: 15px; font-weight: 600; }
-    input:focus { border-color: var(--accent); outline: none; }
+    input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: #080b10; color: #fff; box-sizing: border-box; font-size: 16px; font-weight: 700; }
+    input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 10px var(--accent-glow); }
     
-    .btn-primary { background: var(--accent); color: #000; border: none; padding: 14px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; font-size: 15px; box-shadow: 0 4px 14px var(--accent-glow); margin-top: 10px; }
-    .section-title { font-size: 15px; color: var(--text-main); margin: 20px 0 10px 0; font-weight: 700; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-cyan)); color: #000; border: none; padding: 16px; border-radius: 10px; font-weight: 900; cursor: pointer; width: 100%; font-size: 15px; letter-spacing: 0.5px; margin-top: 10px; box-shadow: 0 4px 20px var(--accent-glow); }
+    .section-title { font-size: 15px; color: var(--text-main); margin: 24px 0 10px 0; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
   </style>
 </head>
 <body>
 
-  <h1>💪 Smart Gym Tracker</h1>
-  <div class="subtitle">⚡ 45-Minute Express Routine (Every-Other-Day)</div>
+  <h1>💪 GYM <span>TRACKER</span></h1>
+  <div class="subtitle">Every-Other-Day Hypertrophy System</div>
 
   <!-- Body Mass Goal Section -->
   <div class="card">
@@ -81,8 +91,14 @@
         <label>Log Today's Weight (kg)</label>
         <input type="number" step="0.1" id="body-weight-input" value="65.1">
       </div>
-      <button class="btn-primary" id="save-weight-btn" style="margin: 0; width: auto; padding: 10px 16px;">Update Weight</button>
+      <button class="btn-primary" id="save-weight-btn" style="margin: 0; width: auto; padding: 12px 18px;">Update</button>
     </div>
+  </div>
+
+  <!-- Duration Toggle -->
+  <div class="duration-toggle">
+    <button class="toggle-btn active" id="toggle-45" onclick="setDuration('45m')">⚡ 45 MIN SESSION</button>
+    <button class="toggle-btn" id="toggle-60" onclick="setDuration('60m')">🔥 60 MIN SESSION</button>
   </div>
 
   <div class="tabs" id="day-tabs"></div>
@@ -90,7 +106,7 @@
   <!-- Pre-Workout Prep -->
   <div class="card">
     <details>
-      <summary>🥗 Pre-Workout Fuel (60m Before)</summary>
+      <summary>🥗 Pre-Workout Fuel Options</summary>
       <div class="form-tips">
         • 1 banana + 2 tbsp peanut butter on toast.<br>
         • Oatmeal + 1 scoop protein powder.<br>
@@ -109,20 +125,20 @@
 
   <div id="workout-container">Loading routine...</div>
 
-  <button class="btn-primary" id="save-workout-btn">Save Workout Routine</button>
+  <button class="btn-primary" id="save-workout-btn">SAVE WORKOUT LOG</button>
 
   <!-- Post-Workout Prep -->
   <div class="section-title">🧘 Post-Workout Recovery</div>
   <div class="card">
     <details>
-      <summary>🧘 Quick Cool-Down (3 Mins)</summary>
+      <summary>🧘 Cool-Down Stretches (3 Mins)</summary>
       <div style="margin-top:6px;">
         <div class="checklist-item"><input type="checkbox"> Hamstring & calf stretch (30s per leg)</div>
         <div class="checklist-item"><input type="checkbox"> Doorway chest stretch (30s)</div>
       </div>
     </details>
     <details>
-      <summary>🥪 Post-Workout Fuel (Within 60m)</summary>
+      <summary>🥪 Post-Workout Recovery Meals</summary>
       <div class="form-tips">
         • Whey shake + bagel or chicken & rice.<br>
         • 3 eggs + toast + avocado.<br>
@@ -153,6 +169,7 @@
 
     const START_WEIGHT = 65.1;
     const GOAL_WEIGHT = 70.0;
+    let selectedDuration = "45m";
 
     function updateGoalUI(currentWeight) {
       document.getElementById('current-weight-label').innerHTML = `Current: <b>${currentWeight.toFixed(1)} kg</b>`;
@@ -163,32 +180,55 @@
     }
 
     const exerciseData = {
-      "Barbell Back Squat": { defaultWeight: 30, img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=600&q=80", tips: "Chest up, squat to parallel." },
-      "Goblet Squat (DB/KB)": { defaultWeight: 12, img: "https://images.unsplash.com/photo-1566241142559-40e1dab266c6?auto=format&fit=crop&w=600&q=80", tips: "Hold weight close to chest." },
-      "Leg Press Machine": { defaultWeight: 50, img: "https://images.unsplash.com/photo-1534367507873-d2d7e24c797f?auto=format&fit=crop&w=600&q=80", tips: "Feet shoulder-width apart." },
-      "Barbell Bench Press": { defaultWeight: 30, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Touch lower chest, press up." },
-      "Flat Dumbbell Press": { defaultWeight: 10, img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80", tips: "Elbows tucked at 45 degrees." },
-      "Lat Pulldown": { defaultWeight: 25, img: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&q=80", tips: "Pull bar down to collarbone." },
-      "Conventional Deadlift": { defaultWeight: 40, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Hinge at hips, keep bar close." },
-      "Incline Dumbbell Press": { defaultWeight: 10, img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Bench set to 30 degrees." },
-      "Seated Cable Row": { defaultWeight: 25, img: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80", tips: "Pull handle to lower stomach." },
-      "Dumbbell Overhead Press": { defaultWeight: 8, img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Press overhead without arching back." }
+      "Barbell Back Squat": { defaultWeight: 30, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdW1uZWJkZzVrbHFjcWFnbnBrZGkzeGF6a3VubmQ3NDdrM2dxeHdyZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKTvbeL32R9CqL6/giphy.gif", tips: "Chest up, knees track over toes, squat parallel." },
+      "Goblet Squat (DB/KB)": { defaultWeight: 12, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdW1uZWJkZzVrbHFjcWFnbnBrZGkzeGF6a3VubmQ3NDdrM2dxeHdyZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKTvbeL32R9CqL6/giphy.gif", tips: "Hold weight close to chest, stay upright." },
+      "Leg Press Machine": { defaultWeight: 50, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdW1uZWJkZzVrbHFjcWFnbnBrZGkzeGF6a3VubmQ3NDdrM2dxeHdyZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKTvbeL32R9CqL6/giphy.gif", tips: "Lower smoothly, keep lower back flat against seat." },
+      "Barbell Bench Press": { defaultWeight: 30, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Retract shoulder blades, lower bar to mid-chest." },
+      "Flat Dumbbell Press": { defaultWeight: 10, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Elbows tucked at 45°, press straight upward." },
+      "Lat Pulldown": { defaultWeight: 25, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXkyenltOW5xNHIwcGJjNmE0OXl3dXFpMnhraXp4ZHZtbHRoMGFhYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT39D2A6f22E3A0f2w/giphy.gif", tips: "Pull bar down to upper chest, drive elbows down." },
+      "Conventional Deadlift": { defaultWeight: 40, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdW1uZWJkZzVrbHFjcWFnbnBrZGkzeGF6a3VubmQ3NDdrM2dxeHdyZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKTvbeL32R9CqL6/giphy.gif", tips: "Hinge at hips, keep bar against shins, chest high." },
+      "Incline Dumbbell Press": { defaultWeight: 10, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Bench at 30 degrees, press upward focusing on upper chest." },
+      "Seated Cable Row": { defaultWeight: 25, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXkyenltOW5xNHIwcGJjNmE0OXl3dXFpMnhraXp4ZHZtbHRoMGFhYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT39D2A6f22E3A0f2w/giphy.gif", tips: "Pull handle toward navel, squeeze shoulder blades." },
+      "Dumbbell Overhead Press": { defaultWeight: 8, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Brace core, press dumbbells straight up overhead." },
+      "Cable Face Pulls": { defaultWeight: 15, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXkyenltOW5xNHIwcGJjNmE0OXl3dXFpMnhraXp4ZHZtbHRoMGFhYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT39D2A6f22E3A0f2w/giphy.gif", tips: "Pull rope to face height, flare elbows outward." },
+      "Dumbbell Lateral Raise": { defaultWeight: 6, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Slight elbow bend, raise weights to shoulder level." }
     };
 
-    const routineTemplates = [
-      [
-        { target: "Quads", options: ["Barbell Back Squat", "Goblet Squat (DB/KB)", "Leg Press Machine"] },
-        { target: "Chest", options: ["Barbell Bench Press", "Flat Dumbbell Press"] },
-        { target: "Lats", options: ["Lat Pulldown"] },
-        { target: "Shoulders", options: ["Dumbbell Overhead Press"] }
+    // Routines configured for 45m (4 moves) and 60m (6 moves)
+    const routineData = {
+      "45m": [
+        [
+          { target: "Quads", options: ["Barbell Back Squat", "Goblet Squat (DB/KB)", "Leg Press Machine"] },
+          { target: "Chest", options: ["Barbell Bench Press", "Flat Dumbbell Press"] },
+          { target: "Lats", options: ["Lat Pulldown"] },
+          { target: "Shoulders", options: ["Dumbbell Overhead Press"] }
+        ],
+        [
+          { target: "Posterior Chain", options: ["Conventional Deadlift"] },
+          { target: "Upper Chest", options: ["Incline Dumbbell Press"] },
+          { target: "Upper Back", options: ["Seated Cable Row"] },
+          { target: "Quads", options: ["Leg Press Machine", "Goblet Squat (DB/KB)"] }
+        ]
       ],
-      [
-        { target: "Posterior Chain", options: ["Conventional Deadlift"] },
-        { target: "Upper Chest", options: ["Incline Dumbbell Press"] },
-        { target: "Upper Back", options: ["Seated Cable Row"] },
-        { target: "Quads", options: ["Leg Press Machine", "Goblet Squat (DB/KB)"] }
+      "60m": [
+        [
+          { target: "Quads", options: ["Barbell Back Squat", "Goblet Squat (DB/KB)", "Leg Press Machine"] },
+          { target: "Chest", options: ["Barbell Bench Press", "Flat Dumbbell Press"] },
+          { target: "Lats", options: ["Lat Pulldown"] },
+          { target: "Shoulders", options: ["Dumbbell Overhead Press"] },
+          { target: "Side Delts", options: ["Dumbbell Lateral Raise"] },
+          { target: "Rear Delts", options: ["Cable Face Pulls"] }
+        ],
+        [
+          { target: "Posterior Chain", options: ["Conventional Deadlift"] },
+          { target: "Upper Chest", options: ["Incline Dumbbell Press"] },
+          { target: "Upper Back", options: ["Seated Cable Row"] },
+          { target: "Quads", options: ["Leg Press Machine", "Goblet Squat (DB/KB)"] },
+          { target: "Side Delts", options: ["Dumbbell Lateral Raise"] },
+          { target: "Rear Delts", options: ["Cable Face Pulls"] }
+        ]
       ]
-    ];
+    };
 
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const schedule = [];
@@ -201,6 +241,13 @@
     }
 
     let activeDayIndex = 0;
+
+    window.setDuration = function(duration) {
+      selectedDuration = duration;
+      document.getElementById('toggle-45').classList.toggle('active', duration === '45m');
+      document.getElementById('toggle-60').classList.toggle('active', duration === '60m');
+      renderExercises();
+    };
 
     function renderTabs() {
       const tabsContainer = document.getElementById('day-tabs');
@@ -220,9 +267,9 @@
 
     window.fetchRecommendation = async function(index) {
       const selectedEx = document.getElementById(`exercise-${index}`).value;
-      const data = exerciseData[selectedEx] || { defaultWeight: 20, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Maintain strict form." };
+      const data = exerciseData[selectedEx] || { defaultWeight: 20, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Maintain strict form." };
       
-      document.getElementById(`img-${index}`).src = data.img;
+      document.getElementById(`gif-${index}`).src = data.gif;
       document.getElementById(`tips-${index}`).innerText = data.tips;
 
       const recBox = document.getElementById(`rec-box-${index}`);
@@ -265,12 +312,12 @@
     function renderExercises() {
       const container = document.getElementById('workout-container');
       container.innerHTML = "";
-      const currentTemplate = routineTemplates[schedule[activeDayIndex].templateIndex];
+      const currentTemplate = routineData[selectedDuration][schedule[activeDayIndex].templateIndex];
 
       currentTemplate.forEach((ex, index) => {
         const optionsHTML = ex.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
         const defaultEx = ex.options[0];
-        const defaultData = exerciseData[defaultEx] || { img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Keep core tight." };
+        const defaultData = exerciseData[defaultEx] || { gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Keep core tight." };
 
         container.innerHTML += `
           <div class="card">
@@ -279,9 +326,9 @@
             
             <div class="recommendation-box" id="rec-box-${index}">Calculating target recommendation...</div>
 
-            <img id="img-${index}" class="visual-guide" src="${defaultData.img}" alt="Guide">
+            <img id="gif-${index}" class="gif-guide" src="${defaultData.gif}" alt="Exercise Demonstration GIF">
             <details>
-              <summary>📖 View Form Cues</summary>
+              <summary>📖 View Form & Safety Cues</summary>
               <div class="form-tips" id="tips-${index}">${defaultData.tips}</div>
             </details>
             <div class="input-row">
@@ -305,7 +352,6 @@
     updateGoalUI(START_WEIGHT);
 
     if (db) {
-      // Fetch Latest Body Weight On App Load
       (async () => {
         try {
           const weightRef = doc(db, "user_profile", "body_weight");
@@ -319,7 +365,7 @@
       })();
 
       document.getElementById('save-workout-btn').addEventListener('click', async () => {
-        const currentTemplate = routineTemplates[schedule[activeDayIndex].templateIndex];
+        const currentTemplate = routineData[selectedDuration][schedule[activeDayIndex].templateIndex];
         const logData = {};
         const today = new Date().toISOString().split('T')[0];
 
@@ -340,10 +386,11 @@
         try {
           await setDoc(doc(db, "workout_logs", `${today}_${schedule[activeDayIndex].name.replace(/\s+/g, '')}`), {
             day: schedule[activeDayIndex].name,
+            duration: selectedDuration,
             date: today,
             exercises: logData
           });
-          alert(`Saved! Recommendations updated for your next session.`);
+          alert(`Success! Saved ${selectedDuration} session logs.`);
         } catch (e) { alert("Error: " + e.message); }
       });
 
@@ -356,7 +403,7 @@
         await setDoc(doc(db, "body_weight_logs", today), { weight_kg: weightVal, date: today });
 
         updateGoalUI(weightVal);
-        alert(`Logged ${weightVal} kg! Progress updated.`);
+        alert(`Logged ${weightVal} kg! Goal progress updated.`);
       });
     }
   </script>
