@@ -187,7 +187,6 @@
 
   <div id="workout-container">Loading routine...</div>
 
-  <!-- Additional Exercise Box -->
   <div class="add-exercise-box">
     <label style="color:var(--accent-cyan);">➕ ADD ADDITIONAL EXERCISE</label>
     <select id="additional-exercise-select">
@@ -246,28 +245,7 @@
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    // PASTE YOUR FIREBASE CONFIG KEYS HERE
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    let db = null;
-    try {
-      const app = initializeApp(firebaseConfig);
-      db = getFirestore(app);
-    } catch (e) { 
-      console.log("Firebase initialized in preview mode."); 
-    }
-
+  <script>
     let currentUnit = "kg";
     const START_WEIGHT_KG = 65.1;
     const GOAL_WEIGHT_KG = 70.0;
@@ -275,6 +253,76 @@
     let timerInterval;
     let rpeFeedback = {};
     let previousPrs = {};
+
+    const exerciseData = {
+      "Barbell Back Squat": { target: "Quads", isBarbell: true, defaultWeight: 30, videoId: "gcNh17Ckjgg", tips: "Chest up, knees track over toes, squat parallel." },
+      "Goblet Squat (DB/KB)": { target: "Quads", isBarbell: false, defaultWeight: 12, videoId: "MeIiIdhvKL4", tips: "Hold weight close to chest, stay upright." },
+      "Leg Press Machine": { target: "Quads", isBarbell: false, defaultWeight: 50, videoId: "IZxyjW7MPJQ", tips: "Lower smoothly, keep lower back flat against seat." },
+      "Barbell Bench Press": { target: "Chest", isBarbell: true, defaultWeight: 30, videoId: "rT7DgCr-3pg", tips: "Retract shoulder blades, lower bar to mid-chest." },
+      "Flat Dumbbell Press": { target: "Chest", isBarbell: false, defaultWeight: 10, videoId: "VmB1G1K7v94", tips: "Elbows tucked at 45°, press straight upward." },
+      "Lat Pulldown": { target: "Lats", isBarbell: false, defaultWeight: 25, videoId: "CAwf7n6Luuc", tips: "Pull bar down to upper chest, drive elbows down." },
+      "Conventional Deadlift": { target: "Posterior Chain", isBarbell: true, defaultWeight: 40, videoId: "op9kVnSso6Q", tips: "Hinge at hips, keep bar against shins, chest high." },
+      "Incline Dumbbell Press": { target: "Upper Chest", isBarbell: false, defaultWeight: 10, videoId: "8iPEnn-ltC8", tips: "Bench at 30 degrees, press upward focusing on upper chest." },
+      "Seated Cable Row": { target: "Upper Back", isBarbell: false, defaultWeight: 25, videoId: "GZbfZ033fBo", tips: "Pull handle toward navel, squeeze shoulder blades." },
+      "Dumbbell Overhead Press": { target: "Shoulders", isBarbell: false, defaultWeight: 8, videoId: "qEwKCR5JCog", tips: "Brace core, press dumbbells straight up overhead." },
+      "Cable Face Pulls": { target: "Rear Delts", isBarbell: false, defaultWeight: 15, videoId: "rep-qVOkqgk", tips: "Pull rope to face height, flare elbows outward." },
+      "Dumbbell Lateral Raise": { target: "Side Delts", isBarbell: false, defaultWeight: 6, videoId: "3VcKaXpzqRo", tips: "Slight elbow bend, raise weights to shoulder level." },
+      "Dumbbell Bicep Curl": { target: "Arms", isBarbell: false, defaultWeight: 8, videoId: "ykJmrZ5v0Oo", tips: "Squeeze bicep at peak, control lowering." },
+      "Tricep Rope Pushdown": { target: "Triceps", isBarbell: false, defaultWeight: 15, videoId: "vB5OHsJ3EME", tips: "Extend arms down, flare rope outward at bottom." }
+    };
+
+    const routineData = {
+      "45m": [
+        [
+          { target: "Quads", options: ["Barbell Back Squat", "Goblet Squat (DB/KB)", "Leg Press Machine"] },
+          { target: "Chest", options: ["Barbell Bench Press", "Flat Dumbbell Press"] },
+          { target: "Lats", options: ["Lat Pulldown"] },
+          { target: "Shoulders", options: ["Dumbbell Overhead Press"] }
+        ],
+        [
+          { target: "Posterior Chain", options: ["Conventional Deadlift"] },
+          { target: "Upper Chest", options: ["Incline Dumbbell Press"] },
+          { target: "Upper Back", options: ["Seated Cable Row"] },
+          { target: "Quads", options: ["Leg Press Machine", "Goblet Squat (DB/KB)"] }
+        ]
+      ],
+      "60m": [
+        [
+          { target: "Quads", options: ["Barbell Back Squat", "Goblet Squat (DB/KB)", "Leg Press Machine"] },
+          { target: "Chest", options: ["Barbell Bench Press", "Flat Dumbbell Press"] },
+          { target: "Lats", options: ["Lat Pulldown"] },
+          { target: "Shoulders", options: ["Dumbbell Overhead Press"] },
+          { target: "Side Delts", options: ["Dumbbell Lateral Raise"] },
+          { target: "Rear Delts", options: ["Cable Face Pulls"] }
+        ],
+        [
+          { target: "Posterior Chain", options: ["Conventional Deadlift"] },
+          { target: "Upper Chest", options: ["Incline Dumbbell Press"] },
+          { target: "Upper Back", options: ["Seated Cable Row"] },
+          { target: "Quads", options: ["Leg Press Machine", "Goblet Squat (DB/KB)"] },
+          { target: "Side Delts", options: ["Dumbbell Lateral Raise"] },
+          { target: "Rear Delts", options: ["Cable Face Pulls"] }
+        ]
+      ],
+      "extra": [
+        { target: "Arms", options: ["Dumbbell Bicep Curl"] },
+        { target: "Triceps", options: ["Tricep Rope Pushdown"] },
+        { target: "Shoulders", options: ["Dumbbell Lateral Raise"] }
+      ]
+    };
+
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const schedule = [];
+    for (let i = 0; i < 7; i++) {
+      schedule.push({
+        name: `${days[i % 7]} (Workout ${Math.floor(i / 2) + 1})`,
+        templateIndex: (Math.floor(i / 2)) % 2,
+        isRest: i % 2 !== 0
+      });
+    }
+
+    let activeDayIndex = 0;
+    let isExtraMode = false;
 
     window.setUnit = function(unit) {
       currentUnit = unit;
@@ -348,503 +396,4 @@
       }
     };
 
-    window.showModal = function(icon, title, text) {
-      document.getElementById('modal-icon').innerText = icon;
-      document.getElementById('modal-title').innerText = title;
-      document.getElementById('modal-results').innerHTML = text;
-      document.getElementById('tools-modal').style.display = "flex";
-    };
-
-    window.openWarmupCalc = function(weight) {
-      const target = parseFloat(weight) || 20;
-      const set1 = Math.max(10, (target * 0.5)).toFixed(1);
-      const set2 = Math.max(15, (target * 0.75)).toFixed(1);
-
-      showModal('🔥', 'Warm-Up Calculator', `
-        Target Working Weight: <b>${target} ${currentUnit}</b><br><br>
-        • <b>Set 1:</b> ${set1} ${currentUnit} × 10 reps<br>
-        • <b>Set 2:</b> ${set2} ${currentUnit} × 5 reps<br>
-        • <b>Working Sets:</b> ${target} ${currentUnit} × 8–10 reps
-      `);
-    };
-
-    window.openPlateCalc = function(weight) {
-      const barWeight = currentUnit === 'lbs' ? 45 : 20;
-      const target = parseFloat(weight) || barWeight;
-      
-      if (target < barWeight) {
-        showModal('🧮', 'Plate Calculator', `Weight is less than empty ${barWeight} ${currentUnit} Olympic barbell!`);
-      } else {
-        let sideWeight = (target - barWeight) / 2;
-        const plates = currentUnit === 'lbs' ? [45, 35, 25, 10, 5, 2.5] : [20, 15, 10, 5, 2.5, 1.25];
-        let breakdown = [];
-        
-        plates.forEach(p => {
-          let count = Math.floor(sideWeight / p);
-          if (count > 0) {
-            breakdown.push(`<b>${count}x ${p}${currentUnit}</b> plate`);
-            sideWeight -= count * p;
-          }
-        });
-
-        const text = breakdown.length ? `Per side (on a ${barWeight}${currentUnit} bar):<br>${breakdown.join('<br>')}` : `Empty ${barWeight}${currentUnit} Barbell!`;
-        showModal('🧮', 'Plate Calculator', text);
-      }
-    };
-
-    window.closeToolsModal = function() {
-      document.getElementById('tools-modal').style.display = "none";
-    };
-
-    window.adjustVal = function(id, delta) {
-      const input = document.getElementById(id);
-      if (!input) return;
-      let val = parseFloat(input.value) || 0;
-      const step = (id.includes('weight') && currentUnit === 'lbs') ? delta * 2.2 : delta;
-      input.value = Math.max(0, val + step).toFixed(1);
-      const index = id.split('-')[1];
-      if (id.includes('weight')) checkPr(index);
-    };
-
-    function updateGoalUI(currentWeight) {
-      document.getElementById('current-weight-label').innerHTML = `Current: <b>${currentWeight.toFixed(1)} ${currentUnit}</b>`;
-      const startW = currentUnit === 'lbs' ? START_WEIGHT_KG * 2.20462 : START_WEIGHT_KG;
-      const goalW = currentUnit === 'lbs' ? GOAL_WEIGHT_KG * 2.20462 : GOAL_WEIGHT_KG;
-      const gained = Math.max(0, currentWeight - startW);
-      const totalToGain = goalW - startW;
-      const progressPct = Math.min(100, (gained / totalToGain) * 100);
-      document.getElementById('goal-progress-bar').style.width = `${progressPct}%`;
-    }
-
-    const exerciseData = {
-      "Barbell Back Squat": { target: "Quads", isBarbell: true, defaultWeight: 30, videoId: "gcNh17Ckjgg", tips: "Chest up, knees track over toes, squat parallel." },
-      "Goblet Squat (DB/KB)": { target: "Quads", isBarbell: false, defaultWeight: 12, videoId: "MeIiIdhvKL4", tips: "Hold weight close to chest, stay upright." },
-      "Leg Press Machine": { target: "Quads", isBarbell: false, defaultWeight: 50, videoId: "IZxyjW7MPJQ", tips: "Lower smoothly, keep lower back flat against seat." },
-      "Barbell Bench Press": { target: "Chest", isBarbell: true, defaultWeight: 30, videoId: "rT7DgCr-3pg", tips: "Retract shoulder blades, lower bar to mid-chest." },
-      "Flat Dumbbell Press": { target: "Chest", isBarbell: false, defaultWeight: 10, videoId: "VmB1G1K7v94", tips: "Elbows tucked at 45°, press straight upward." },
-      "Lat Pulldown": { target: "Lats", isBarbell: false, defaultWeight: 25, videoId: "CAwf7n6Luuc", tips: "Pull bar down to upper chest, drive elbows down." },
-      "Conventional Deadlift": { target: "Posterior Chain", isBarbell: true, defaultWeight: 40, videoId: "op9kVnSso6Q", tips: "Hinge at hips, keep bar against shins, chest high." },
-      "Incline Dumbbell Press": { target: "Upper Chest", isBarbell: false, defaultWeight: 10, videoId: "8iPEnn-ltC8", tips: "Bench at 30 degrees, press upward focusing on upper chest." },
-      "Seated Cable Row": { target: "Upper Back", isBarbell: false, defaultWeight: 25, videoId: "GZbfZ033fBo", tips: "Pull handle toward navel, squeeze shoulder blades." },
-      "Dumbbell Overhead Press": { target: "Shoulders", isBarbell: false, defaultWeight: 8, videoId: "qEwKCR5JCog", tips: "Brace core, press dumbbells straight up overhead." },
-      "Cable Face Pulls": { target: "Rear Delts", isBarbell: false, defaultWeight: 15, videoId: "rep-qVOkqgk", tips: "Pull rope to face height, flare elbows outward." },
-      "Dumbbell Lateral Raise": { target: "Side Delts", isBarbell: false, defaultWeight: 6, videoId: "3VcKaXpzqRo", tips: "Slight elbow bend, raise weights to shoulder level." },
-      "Dumbbell Bicep Curl": { target: "Arms", isBarbell: false, defaultWeight: 8, videoId: "ykJmrZ5v0Oo", tips: "Squeeze bicep at peak, control lowering." },
-      "Tricep Rope Pushdown": { target: "Triceps", isBarbell: false, defaultWeight: 15, videoId: "vB5OHsJ3EME", tips: "Extend arms down, flare rope outward at bottom." }
-    };
-
-    const routineData = {
-      "45m": [
-        [
-          { target: "Quads", options: ["Barbell Back Squat", "Goblet Squat (DB/KB)", "Leg Press Machine"] },
-          { target: "Chest", options: ["Barbell Bench Press", "Flat Dumbbell Press"] },
-          { target: "Lats", options: ["Lat Pulldown"] },
-          { target: "Shoulders", options: ["Dumbbell Overhead Press"] }
-        ],
-        [
-          { target: "Posterior Chain", options: ["Conventional Deadlift"] },
-          { target: "Upper Chest", options: ["Incline Dumbbell Press"] },
-          { target: "Upper Back", options: ["Seated Cable Row"] },
-          { target: "Quads", options: ["Leg Press Machine", "Goblet Squat (DB/KB)"] }
-        ]
-      ],
-      "60m": [
-        [
-          { target: "Quads", options: ["Barbell Back Squat", "Goblet Squat (DB/KB)", "Leg Press Machine"] },
-          { target: "Chest", options: ["Barbell Bench Press", "Flat Dumbbell Press"] },
-          { target: "Lats", options: ["Lat Pulldown"] },
-          { target: "Shoulders", options: ["Dumbbell Overhead Press"] },
-          { target: "Side Delts", options: ["Dumbbell Lateral Raise"] },
-          { target: "Rear Delts", options: ["Cable Face Pulls"] }
-        ],
-        [
-          { target: "Posterior Chain", options: ["Conventional Deadlift"] },
-          { target: "Upper Chest", options: ["Incline Dumbbell Press"] },
-          { target: "Upper Back", options: ["Seated Cable Row"] },
-          { target: "Quads", options: ["Leg Press Machine", "Goblet Squat (DB/KB)"] },
-          { target: "Side Delts", options: ["Dumbbell Lateral Raise"] },
-          { target: "Rear Delts", options: ["Cable Face Pulls"] }
-        ]
-      ],
-      "extra": [
-        { target: "Arms", options: ["Dumbbell Bicep Curl"] },
-        { target: "Triceps", options: ["Tricep Rope Pushdown"] },
-        { target: "Shoulders", options: ["Dumbbell Lateral Raise"] }
-      ]
-    };
-
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const schedule = [];
-    for (let i = 0; i < 7; i++) {
-      schedule.push({
-        name: `${days[i % 7]} (Workout ${Math.floor(i / 2) + 1})`,
-        templateIndex: (Math.floor(i / 2)) % 2,
-        isRest: i % 2 !== 0
-      });
-    }
-
-    let activeDayIndex = 0;
-    let isExtraMode = false;
-
-    window.setDuration = function(duration) {
-      selectedDuration = duration;
-      document.getElementById('toggle-45').classList.toggle('active', duration === '45m');
-      document.getElementById('toggle-60').classList.toggle('active', duration === '60m');
-      renderExercises();
-    };
-
-    function renderTabs() {
-      const tabsContainer = document.getElementById('day-tabs');
-      tabsContainer.innerHTML = "";
-      schedule.forEach((item, idx) => {
-        if (!item.isRest) {
-          tabsContainer.innerHTML += `<button class="tab-btn ${(!isExtraMode && idx === activeDayIndex) ? 'active' : ''}" onclick="selectDay(${idx})">${item.name}</button>`;
-        }
-      });
-      tabsContainer.innerHTML += `<button class="tab-btn extra ${isExtraMode ? 'active' : ''}" onclick="selectExtraDay()">➕ Extra Workout</button>`;
-    }
-
-    window.selectDay = function(idx) {
-      isExtraMode = false;
-      activeDayIndex = idx;
-      renderTabs();
-      renderExercises();
-    };
-
-    window.selectExtraDay = function() {
-      isExtraMode = true;
-      renderTabs();
-      renderExercises();
-    };
-
-    window.fetchRecommendation = async function(index) {
-      const exSelect = document.getElementById(`exercise-${index}`);
-      if (!exSelect) return;
-
-      const selectedEx = exSelect.value;
-      const data = exerciseData[selectedEx] || { isBarbell: false, defaultWeight: 20, videoId: "gcNh17Ckjgg", tips: "Maintain strict form." };
-      
-      const videoBox = document.getElementById(`video-box-${index}`);
-      if (videoBox) videoBox.innerHTML = `<iframe src="https://www.youtube.com/embed/${data.videoId}?rel=0" allowfullscreen></iframe>`;
-      
-      const tipsBox = document.getElementById(`tips-${index}`);
-      if (tipsBox) tipsBox.innerText = data.tips;
-
-      const calcContainer = document.getElementById(`tool-btns-container-${index}`);
-      if (calcContainer) {
-        calcContainer.innerHTML = `
-          <button class="btn-tool" onclick="openWarmupCalc(document.getElementById('weight-${index}').value)">🔥 Warm-Up Sets</button>
-          ${data.isBarbell ? `<button class="btn-tool" onclick="openPlateCalc(document.getElementById('weight-${index}').value)">🧮 Barbell Plates</button>` : ''}
-        `;
-      }
-
-      const recBox = document.getElementById(`rec-box-${index}`);
-      const weightInput = document.getElementById(`weight-${index}`);
-
-      let targetWeight = currentUnit === 'lbs' ? (data.defaultWeight * 2.20462) : data.defaultWeight;
-
-      if (db) {
-        try {
-          const docRef = doc(db, "exercise_history", selectedEx.replace(/\s+/g, '_'));
-          const docSnap = await getDoc(docRef);
-          
-          if (docSnap.exists()) {
-            const lastData = docSnap.data();
-            let lastWeight = parseFloat(lastData.weight) || data.defaultWeight;
-            if (currentUnit === 'lbs') lastWeight *= 2.20462;
-            const lastRpe = lastData.rpe || 'ok';
-            previousPrs[selectedEx] = lastWeight;
-
-            if (lastRpe === 'easy') {
-              targetWeight = lastWeight + (currentUnit === 'lbs' ? 5 : 2.5);
-              if (recBox) recBox.innerHTML = `🎯 <b>Smart Rec (Felt Easy):</b> Increase to <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8 reps.`;
-            } else if (lastRpe === 'hard') {
-              targetWeight = lastWeight;
-              if (recBox) recBox.innerHTML = `🎯 <b>Smart Rec (Felt Hard):</b> Hold at <b>${targetWeight.toFixed(1)} ${currentUnit}</b> & focus on form.`;
-            } else {
-              targetWeight = lastWeight;
-              if (recBox) recBox.innerHTML = `🎯 <b>Smart Rec:</b> Continue at <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
-            }
-          } else {
-            if (recBox) recBox.innerHTML = `🎯 <b>First Time Target:</b> Start with <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
-          }
-        } catch (err) {
-          if (recBox) recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
-        }
-      } else {
-        if (recBox) recBox.innerHTML = `🎯 <b>Target:</b> Try <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
-      }
-
-      if (weightInput) weightInput.value = targetWeight.toFixed(1);
-    };
-
-    window.addAdditionalExercise = function() {
-      const select = document.getElementById('additional-exercise-select');
-      const chosenEx = select.value;
-      if (!chosenEx) return alert("Please select an exercise from the dropdown!");
-
-      const container = document.getElementById('workout-container');
-      const newIndex = container.children.length;
-      const data = exerciseData[chosenEx];
-
-      const cardHTML = `
-        <div class="card" id="card-${newIndex}">
-          <div class="pr-banner" id="pr-banner-${newIndex}"></div>
-          <div class="card-header"><span class="target-tag">${data.target || 'Bonus'}</span></div>
-          <select id="exercise-${newIndex}" onchange="fetchRecommendation(${newIndex})">
-            <option value="${chosenEx}" selected>${chosenEx}</option>
-          </select>
-          
-          <div class="recommendation-box" id="rec-box-${newIndex}">Calculating target recommendation...</div>
-          <div id="tool-btns-container-${newIndex}"></div>
-
-          <div class="video-container" id="video-box-${newIndex}">
-            <iframe src="https://www.youtube.com/embed/${data.videoId}?rel=0" allowfullscreen></iframe>
-          </div>
-          
-          <details>
-            <summary>📖 View Form & Safety Cues</summary>
-            <div class="form-tips" id="tips-${newIndex}">${data.tips}</div>
-          </details>
-          <div class="input-row-3">
-            <div class="input-group-3">
-              <label>Sets</label>
-              <div class="stepper-container">
-                <button class="stepper-btn" onclick="adjustVal('sets-${newIndex}', -1)">-</button>
-                <input type="number" id="sets-${newIndex}" value="3">
-                <button class="stepper-btn" onclick="adjustVal('sets-${newIndex}', 1)">+</button>
-              </div>
-            </div>
-            <div class="input-group-3">
-              <label>Weight (${currentUnit})</label>
-              <div class="stepper-container">
-                <button class="stepper-btn" onclick="adjustVal('weight-${newIndex}', -2.5)">-</button>
-                <input type="number" id="weight-${newIndex}" oninput="checkPr(${newIndex})">
-                <button class="stepper-btn" onclick="adjustVal('weight-${newIndex}', 2.5)">+</button>
-              </div>
-            </div>
-            <div class="input-group-3">
-              <label>Reps</label>
-              <div class="stepper-container">
-                <button class="stepper-btn" onclick="adjustVal('reps-${newIndex}', -1)">-</button>
-                <input type="number" id="reps-${newIndex}" value="8">
-                <button class="stepper-btn" onclick="adjustVal('reps-${newIndex}', 1)">+</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="complete-box">
-            <div class="complete-header">
-              <label for="complete-check-${newIndex}">Mark Exercise Complete</label>
-              <input type="checkbox" id="complete-check-${newIndex}" onchange="toggleExerciseComplete(${newIndex})">
-            </div>
-            <div class="rpe-selector" id="rpe-box-${newIndex}">
-              <div class="rpe-title">How did this exercise feel?</div>
-              <div class="rpe-btn-group">
-                <button class="rpe-btn easy" id="rpe-easy-${newIndex}" onclick="selectRPE(${newIndex}, 'easy')">🟢 Easy</button>
-                <button class="rpe-btn ok" id="rpe-ok-${newIndex}" onclick="selectRPE(${newIndex}, 'ok')">🟡 Just Right</button>
-                <button class="rpe-btn hard" id="rpe-hard-${newIndex}" onclick="selectRPE(${newIndex}, 'hard')">🔴 Hard</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      container.insertAdjacentHTML('beforeend', cardHTML);
-      fetchRecommendation(newIndex);
-      select.value = "";
-    };
-
-    function renderExercises() {
-      const container = document.getElementById('workout-container');
-      container.innerHTML = "";
-      
-      const currentTemplate = isExtraMode 
-        ? routineData["extra"] 
-        : routineData[selectedDuration][schedule[activeDayIndex].templateIndex];
-
-      currentTemplate.forEach((ex, index) => {
-        const optionsHTML = ex.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
-        const defaultEx = ex.options[0];
-        const defaultData = exerciseData[defaultEx] || { videoId: "gcNh17Ckjgg", tips: "Keep core tight." };
-
-        container.innerHTML += `
-          <div class="card" id="card-${index}">
-            <div class="pr-banner" id="pr-banner-${index}"></div>
-            <div class="card-header"><span class="target-tag">${ex.target}</span></div>
-            <select id="exercise-${index}" onchange="fetchRecommendation(${index})">${optionsHTML}</select>
-            
-            <div class="recommendation-box" id="rec-box-${index}">Calculating target recommendation...</div>
-            <div id="tool-btns-container-${index}"></div>
-
-            <div class="video-container" id="video-box-${index}">
-              <iframe src="https://www.youtube.com/embed/${defaultData.videoId}?rel=0" allowfullscreen></iframe>
-            </div>
-            
-            <details>
-              <summary>📖 View Form & Safety Cues</summary>
-              <div class="form-tips" id="tips-${index}">${defaultData.tips}</div>
-            </details>
-            <div class="input-row-3">
-              <div class="input-group-3">
-                <label>Sets</label>
-                <div class="stepper-container">
-                  <button class="stepper-btn" onclick="adjustVal('sets-${index}', -1)">-</button>
-                  <input type="number" id="sets-${index}" value="3">
-                  <button class="stepper-btn" onclick="adjustVal('sets-${index}', 1)">+</button>
-                </div>
-              </div>
-              <div class="input-group-3">
-                <label>Weight (${currentUnit})</label>
-                <div class="stepper-container">
-                  <button class="stepper-btn" onclick="adjustVal('weight-${index}', -2.5)">-</button>
-                  <input type="number" id="weight-${index}" oninput="checkPr(${index})">
-                  <button class="stepper-btn" onclick="adjustVal('weight-${index}', 2.5)">+</button>
-                </div>
-              </div>
-              <div class="input-group-3">
-                <label>Reps</label>
-                <div class="stepper-container">
-                  <button class="stepper-btn" onclick="adjustVal('reps-${index}', -1)">-</button>
-                  <input type="number" id="reps-${index}" value="8">
-                  <button class="stepper-btn" onclick="adjustVal('reps-${index}', 1)">+</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="complete-box">
-              <div class="complete-header">
-                <label for="complete-check-${index}">Mark Exercise Complete</label>
-                <input type="checkbox" id="complete-check-${index}" onchange="toggleExerciseComplete(${index})">
-              </div>
-              <div class="rpe-selector" id="rpe-box-${index}">
-                <div class="rpe-title">How did this exercise feel?</div>
-                <div class="rpe-btn-group">
-                  <button class="rpe-btn easy" id="rpe-easy-${index}" onclick="selectRPE(${index}, 'easy')">🟢 Easy</button>
-                  <button class="rpe-btn ok" id="rpe-ok-${index}" onclick="selectRPE(${index}, 'ok')">🟡 Just Right</button>
-                  <button class="rpe-btn hard" id="rpe-hard-${index}" onclick="selectRPE(${index}, 'hard')">🔴 Hard</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-        setTimeout(() => fetchRecommendation(index), 100);
-      });
-    }
-
-    renderTabs();
-    renderExercises();
-    updateGoalUI(START_WEIGHT_KG);
-
-    const ctx = document.getElementById('weightChart').getContext('2d');
-    const weightChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['Start', 'Today'],
-        datasets: [{
-          label: 'Body Weight',
-          data: [65.1, 65.1],
-          borderColor: '#00ff87',
-          backgroundColor: 'rgba(0, 255, 135, 0.1)',
-          fill: true,
-          tension: 0.3
-        }]
-      },
-      options: {
-        scales: {
-          y: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af' } },
-          x: { grid: { color: '#1f2937' }, ticks: { color: '#9ca3af' } }
-        },
-        plugins: { legend: { display: false } }
-      }
-    });
-
-    // Save Workout Click Event Listener
-    document.getElementById('save-workout-btn').addEventListener('click', async () => {
-      try {
-        const container = document.getElementById('workout-container');
-        const totalCards = container.children.length;
-        const logData = {};
-        const today = new Date().toISOString().split('T')[0];
-
-        for (let index = 0; index < totalCards; index++) {
-          const exElem = document.getElementById(`exercise-${index}`);
-          if (!exElem) continue;
-
-          const selectedEx = exElem.value;
-          const sets = document.getElementById(`sets-${index}`) ? document.getElementById(`sets-${index}`).value : 3;
-          const weight = document.getElementById(`weight-${index}`) ? document.getElementById(`weight-${index}`).value : 0;
-          const reps = document.getElementById(`reps-${index}`) ? document.getElementById(`reps-${index}`).value : 0;
-          const rpe = rpeFeedback[index] || 'ok';
-
-          logData[selectedEx] = { sets, weight, reps, rpe, unit: currentUnit };
-
-          if (db) {
-            await setDoc(doc(db, "exercise_history", selectedEx.replace(/\s+/g, '_')), {
-              weight: weight,
-              reps: reps,
-              sets: sets,
-              rpe: rpe,
-              unit: currentUnit,
-              last_updated: today
-            });
-          }
-        }
-
-        const logName = isExtraMode ? "ExtraWorkout" : schedule[activeDayIndex].name.replace(/\s+/g, '');
-        if (db) {
-          await setDoc(doc(db, "workout_logs", `${today}_${logName}`), {
-            day: isExtraMode ? "Extra Workout" : schedule[activeDayIndex].name,
-            duration: selectedDuration,
-            date: today,
-            exercises: logData
-          });
-
-          await setDoc(doc(db, "user_profile", "last_workout"), { date: today, dayName: schedule[activeDayIndex].name });
-        }
-
-        const streakEl = document.getElementById('streak-counter');
-        const newStreak = (parseInt(streakEl.innerText) || 0) + 1;
-        streakEl.innerText = newStreak;
-        if (db) await setDoc(doc(db, "user_profile", "streak"), { count: newStreak });
-
-        if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
-
-        document.getElementById('archived-banner').style.display = 'block';
-        document.getElementById('save-workout-btn').innerText = 'WORKOUT ARCHIVED FOR TODAY ✅';
-
-        showModal('🎉', 'Workout Logged!', `
-          Awesome work! Your ${selectedDuration} session logs have been saved.<br><br>
-          • <b>Streak Updated:</b> ${newStreak} Sessions<br>
-          • <b>Date:</b> ${today}<br><br>
-          See you next session!
-        `);
-      } catch (err) {
-        alert("Save Error: " + err.message);
-      }
-    });
-
-    document.getElementById('save-weight-btn').addEventListener('click', async () => {
-      try {
-        const weightVal = parseFloat(document.getElementById('body-weight-input').value);
-        if (!weightVal) return alert("Enter weight!");
-        const today = new Date().toISOString().split('T')[0];
-
-        if (db) {
-          await setDoc(doc(db, "user_profile", "body_weight"), { latest_weight: weightVal, unit: currentUnit });
-          await setDoc(doc(db, "body_weight_logs", today), { weight: weightVal, unit: currentUnit, date: today });
-        }
-
-        updateGoalUI(weightVal);
-        weightChart.data.datasets[0].data[1] = weightVal;
-        weightChart.update();
-
-        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-        showModal('⚖️', 'Weight Updated!', `Logged <b>${weightVal} ${currentUnit}</b> for today. Your progress toward 70kg has been recalculated.`);
-      } catch (err) {
-        alert("Weight Save Error: " + err.message);
-      }
-    });
-  </script>
-</body>
-</html>
+    window.
