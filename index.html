@@ -36,7 +36,7 @@
     .tab-btn.active { background: #1f2937; color: var(--accent); border: 1px solid var(--accent); }
     
     .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); position: relative; transition: 0.3s; }
-    .card.completed { border-color: var(--accent); opacity: 0.6; }
+    .card.completed { border-color: var(--accent); opacity: 0.85; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .target-tag { background: rgba(0, 255, 135, 0.1); color: var(--accent); font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(0, 255, 135, 0.2); }
     
@@ -44,6 +44,10 @@
     .goal-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
     .progress-bg { background: #000; border-radius: 10px; height: 12px; border: 1px solid var(--border-color); overflow: hidden; padding: 2px; }
     .progress-fill { background: linear-gradient(90deg, var(--accent), var(--accent-cyan)); height: 100%; width: 0%; border-radius: 8px; transition: width 0.5s ease-in-out; }
+
+    /* PR Banner Style */
+    .pr-banner { display: none; background: linear-gradient(135deg, #ff0055, #ffcc00); color: #000; font-weight: 900; font-size: 12px; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; animation: pulse 1s infinite alternate; }
+    @keyframes pulse { 0% { transform: scale(0.98); } 100% { transform: scale(1.02); } }
 
     .img-guide { width: 100%; height: 180px; border-radius: 10px; object-fit: cover; margin: 10px 0; border: 1px solid var(--border-color); background: #000; }
     details { margin-bottom: 8px; font-size: 13px; color: var(--text-muted); }
@@ -53,8 +57,20 @@
     .checklist-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: #d1d5db; }
     .checklist-item input { width: 18px; height: 18px; accent-color: var(--accent); }
 
-    .complete-box { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; margin-top: 12px; }
-    .complete-box label { margin: 0; font-size: 12px; color: var(--accent); font-weight: 800; cursor: pointer; }
+    .complete-box { background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; margin-top: 12px; }
+    .complete-header { display: flex; align-items: center; justify-content: space-between; }
+    .complete-header label { margin: 0; font-size: 12px; color: var(--accent); font-weight: 800; cursor: pointer; }
+
+    .rpe-selector { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color); }
+    .rpe-title { font-size: 11px; color: #aaa; margin-bottom: 6px; font-weight: 700; }
+    .rpe-btn-group { display: flex; gap: 6px; }
+    .rpe-btn { flex: 1; padding: 8px 4px; border: 1px solid var(--border-color); border-radius: 6px; background: #080b10; color: #fff; font-weight: 700; font-size: 11px; cursor: pointer; text-align: center; }
+    .rpe-btn.easy { border-color: #00ff87; }
+    .rpe-btn.easy.selected { background: #00ff87; color: #000; }
+    .rpe-btn.ok { border-color: #60efff; }
+    .rpe-btn.ok.selected { background: #60efff; color: #000; }
+    .rpe-btn.hard { border-color: #ff4d4d; }
+    .rpe-btn.hard.selected { background: #ff4d4d; color: #fff; }
 
     .recommendation-box { background: rgba(0, 255, 135, 0.08); border: 1px dashed var(--accent); border-radius: 8px; padding: 10px; font-size: 12px; color: #fff; margin-bottom: 12px; }
     .recommendation-box b { color: var(--accent); }
@@ -73,7 +89,7 @@
     .timer-controls { display: flex; gap: 6px; }
     .timer-btn { background: #1f2937; color: #fff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; }
 
-    .plate-calc-btn { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; cursor: pointer; margin-bottom: 8px; display: inline-block; }
+    .btn-tool { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; cursor: pointer; margin-bottom: 8px; margin-right: 4px; display: inline-block; }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
     .modal-content { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 20px; width: 100%; max-width: 360px; text-align: center; }
 
@@ -151,11 +167,12 @@
     </div>
   </div>
 
-  <div class="modal" id="plate-modal">
+  <!-- Tools Modal -->
+  <div class="modal" id="tools-modal">
     <div class="modal-content">
-      <h3 style="color:var(--accent); margin-top:0;">🧮 Barbell Plate Calculator</h3>
-      <p id="plate-results" style="font-size:14px; color:#fff; line-height:1.6;"></p>
-      <button class="btn-primary" onclick="closePlateModal()">Close</button>
+      <h3 style="color:var(--accent); margin-top:0;" id="modal-title">Tool</h3>
+      <p id="modal-results" style="font-size:14px; color:#fff; line-height:1.6;"></p>
+      <button class="btn-primary" onclick="closeToolsModal()">Close</button>
     </div>
   </div>
 
@@ -183,6 +200,8 @@
     const GOAL_WEIGHT = 70.0;
     let selectedDuration = "45m";
     let timerInterval;
+    let rpeFeedback = {};
+    let previousPrs = {};
 
     window.startTimer = function(seconds) {
       clearInterval(timerInterval);
@@ -204,19 +223,65 @@
     window.toggleExerciseComplete = function(index) {
       const checkbox = document.getElementById(`complete-check-${index}`);
       const card = document.getElementById(`card-${index}`);
+      const rpeBox = document.getElementById(`rpe-box-${index}`);
+
       if (checkbox.checked) {
         card.classList.add('completed');
-        startTimer(90); // Auto launches 90-second rest timer
+        rpeBox.style.display = "block";
+        startTimer(90);
       } else {
         card.classList.remove('completed');
+        rpeBox.style.display = "none";
       }
+    };
+
+    window.selectRPE = function(index, rating) {
+      rpeFeedback[index] = rating;
+      ['easy', 'ok', 'hard'].forEach(r => {
+        const btn = document.getElementById(`rpe-${r}-${index}`);
+        btn.classList.toggle('selected', r === rating);
+      });
+    };
+
+    window.checkPr = function(index) {
+      const selectedEx = document.getElementById(`exercise-${index}`).value;
+      const currentWeight = parseFloat(document.getElementById(`weight-${index}`).value) || 0;
+      const prBanner = document.getElementById(`pr-banner-${index}`);
+      const lastPr = previousPrs[selectedEx] || 0;
+
+      if (currentWeight > lastPr && lastPr > 0) {
+        prBanner.style.display = "block";
+        prBanner.innerText = `🎉 NEW PR! (+${(currentWeight - lastPr).toFixed(1)} kg)`;
+      } else {
+        prBanner.style.display = "none";
+      }
+    };
+
+    window.openWarmupCalc = function(weight) {
+      const target = parseFloat(weight) || 20;
+      const titleEl = document.getElementById('modal-title');
+      const resultsEl = document.getElementById('modal-results');
+      
+      titleEl.innerText = "🔥 Warm-Up Calculator";
+      const set1 = Math.max(20, (target * 0.5)).toFixed(1);
+      const set2 = Math.max(20, (target * 0.75)).toFixed(1);
+
+      resultsEl.innerHTML = `
+        Target Weight: <b>${target} kg</b><br><br>
+        • <b>Set 1:</b> ${set1} kg × 10 reps (Light)<br>
+        • <b>Set 2:</b> ${set2} kg × 5 reps (Moderate)<br>
+        • <b>Working Sets:</b> ${target} kg × 8–10 reps
+      `;
+      document.getElementById('tools-modal').style.display = "flex";
     };
 
     window.openPlateCalc = function(weight) {
       const barWeight = 20;
       const target = parseFloat(weight) || 20;
-      const resultsEl = document.getElementById('plate-results');
+      const titleEl = document.getElementById('modal-title');
+      const resultsEl = document.getElementById('modal-results');
       
+      titleEl.innerText = "🧮 Barbell Plate Calculator";
       if (target < barWeight) {
         resultsEl.innerHTML = "Weight is less than empty 20kg Olympic barbell!";
       } else {
@@ -234,17 +299,19 @@
 
         resultsEl.innerHTML = breakdown.length ? `Per side (on a 20kg bar):<br>${breakdown.join('<br>')}` : "Empty 20kg Barbell!";
       }
-      document.getElementById('plate-modal').style.display = "flex";
+      document.getElementById('tools-modal').style.display = "flex";
     };
 
-    window.closePlateModal = function() {
-      document.getElementById('plate-modal').style.display = "none";
+    window.closeToolsModal = function() {
+      document.getElementById('tools-modal').style.display = "none";
     };
 
     window.adjustVal = function(id, delta) {
       const input = document.getElementById(id);
       let val = parseFloat(input.value) || 0;
       input.value = Math.max(0, val + delta).toFixed(delta % 1 === 0 ? 0 : 1);
+      const index = id.split('-')[1];
+      checkPr(index);
     };
 
     function updateGoalUI(currentWeight) {
@@ -347,8 +414,11 @@
       document.getElementById(`img-${index}`).src = data.img;
       document.getElementById(`tips-${index}`).innerText = data.tips;
 
-      const calcContainer = document.getElementById(`plate-calc-container-${index}`);
-      calcContainer.innerHTML = data.isBarbell ? `<button class="plate-calc-btn" onclick="openPlateCalc(document.getElementById('weight-${index}').value)">🧮 Barbell Plates</button>` : '';
+      const calcContainer = document.getElementById(`tool-btns-container-${index}`);
+      calcContainer.innerHTML = `
+        <button class="btn-tool" onclick="openWarmupCalc(document.getElementById('weight-${index}').value)">🔥 Warm-Up Sets</button>
+        ${data.isBarbell ? `<button class="btn-tool" onclick="openPlateCalc(document.getElementById('weight-${index}').value)">🧮 Barbell Plates</button>` : ''}
+      `;
 
       const recBox = document.getElementById(`rec-box-${index}`);
       const weightInput = document.getElementById(`weight-${index}`);
@@ -364,14 +434,18 @@
           if (docSnap.exists()) {
             const lastData = docSnap.data();
             const lastWeight = parseFloat(lastData.weight) || data.defaultWeight;
-            const lastReps = parseInt(lastData.reps) || 8;
+            const lastRpe = lastData.rpe || 'ok';
+            previousPrs[selectedEx] = lastWeight;
 
-            if (lastReps >= 10) {
+            if (lastRpe === 'easy') {
               targetWeight = lastWeight + 2.5;
-              recBox.innerHTML = `🎯 <b>Recommendation:</b> Increase to <b>${targetWeight} kg</b> for 8 reps (Last: ${lastWeight}kg × ${lastReps} reps).`;
+              recBox.innerHTML = `🎯 <b>Smart Rec (Felt Easy):</b> Increase to <b>${targetWeight} kg</b> × 8 reps.`;
+            } else if (lastRpe === 'hard') {
+              targetWeight = lastWeight;
+              recBox.innerHTML = `🎯 <b>Smart Rec (Felt Hard):</b> Hold at <b>${targetWeight} kg</b> & focus on strict form.`;
             } else {
               targetWeight = lastWeight;
-              recBox.innerHTML = `🎯 <b>Recommendation:</b> Stay at <b>${targetWeight} kg</b> and aim for 8–10 reps (Last: ${lastWeight}kg × ${lastReps} reps).`;
+              recBox.innerHTML = `🎯 <b>Smart Rec:</b> Continue at <b>${targetWeight} kg</b> × 8–10 reps.`;
             }
           } else {
             recBox.innerHTML = `🎯 <b>First Time Target:</b> Start with <b>${targetWeight} kg</b> × 8–10 reps.`;
@@ -399,11 +473,12 @@
 
         container.innerHTML += `
           <div class="card" id="card-${index}">
+            <div class="pr-banner" id="pr-banner-${index}"></div>
             <div class="card-header"><span class="target-tag">${ex.target}</span></div>
             <select id="exercise-${index}" onchange="fetchRecommendation(${index})">${optionsHTML}</select>
             
             <div class="recommendation-box" id="rec-box-${index}">Calculating target recommendation...</div>
-            <div id="plate-calc-container-${index}"></div>
+            <div id="tool-btns-container-${index}"></div>
 
             <img id="img-${index}" class="img-guide" src="${defaultData.img}" alt="Exercise Guide Image">
             <details>
@@ -415,7 +490,7 @@
                 <label>Weight (kg)</label>
                 <div class="stepper-container">
                   <button class="stepper-btn" onclick="adjustVal('weight-${index}', -2.5)">-</button>
-                  <input type="number" id="weight-${index}">
+                  <input type="number" id="weight-${index}" oninput="checkPr(${index})">
                   <button class="stepper-btn" onclick="adjustVal('weight-${index}', 2.5)">+</button>
                 </div>
               </div>
@@ -428,9 +503,20 @@
                 </div>
               </div>
             </div>
+
             <div class="complete-box">
-              <label for="complete-check-${index}">Mark Exercise Complete</label>
-              <input type="checkbox" id="complete-check-${index}" onchange="toggleExerciseComplete(${index})">
+              <div class="complete-header">
+                <label for="complete-check-${index}">Mark Exercise Complete</label>
+                <input type="checkbox" id="complete-check-${index}" onchange="toggleExerciseComplete(${index})">
+              </div>
+              <div class="rpe-selector" id="rpe-box-${index}">
+                <div class="rpe-title">How did this exercise feel?</div>
+                <div class="rpe-btn-group">
+                  <button class="rpe-btn easy" id="rpe-easy-${index}" onclick="selectRPE(${index}, 'easy')">🟢 Easy</button>
+                  <button class="rpe-btn ok" id="rpe-ok-${index}" onclick="selectRPE(${index}, 'ok')">🟡 Just Right</button>
+                  <button class="rpe-btn hard" id="rpe-hard-${index}" onclick="selectRPE(${index}, 'hard')">🔴 Hard</button>
+                </div>
+              </div>
             </div>
           </div>
         `;
@@ -495,12 +581,14 @@
           const selectedEx = document.getElementById(`exercise-${index}`).value;
           const weight = document.getElementById(`weight-${index}`).value || 0;
           const reps = document.getElementById(`reps-${index}`).value || 0;
+          const rpe = rpeFeedback[index] || 'ok';
 
-          logData[selectedEx] = { weight, reps };
+          logData[selectedEx] = { weight, reps, rpe };
 
           await setDoc(doc(db, "exercise_history", selectedEx.replace(/\s+/g, '_')), {
             weight: weight,
             reps: reps,
+            rpe: rpe,
             last_updated: today
           });
         }
