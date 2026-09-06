@@ -13,6 +13,7 @@
       --accent: #00ff87;
       --accent-glow: rgba(0, 255, 135, 0.2);
       --accent-cyan: #60efff;
+      --warning: #ffcc00;
       --text-main: #f3f4f6;
       --text-muted: #9ca3af;
     }
@@ -23,8 +24,11 @@
     }
     h1 { color: #fff; margin: 0 0 2px 0; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
     h1 span { color: var(--accent); text-shadow: 0 0 12px var(--accent-glow); }
-    .subtitle { color: var(--text-muted); font-size: 12px; margin-bottom: 16px; font-weight: 500; }
+    .subtitle { color: var(--text-muted); font-size: 12px; margin-bottom: 12px; font-weight: 500; }
     
+    .status-banner { display: none; background: rgba(255, 204, 0, 0.1); border: 1px solid var(--warning); color: var(--warning); font-size: 11px; font-weight: 700; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; }
+    .archived-banner { display: none; background: rgba(0, 255, 135, 0.1); border: 1px solid var(--accent); color: var(--accent); font-size: 12px; font-weight: 800; padding: 10px; border-radius: 8px; margin-bottom: 12px; text-align: center; }
+
     .streak-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(96, 239, 255, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; }
 
     .duration-toggle { display: flex; background: #000; padding: 4px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 16px; }
@@ -34,7 +38,8 @@
     .tabs { display: flex; gap: 6px; margin-bottom: 16px; background: var(--card-bg); padding: 4px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; }
     .tab-btn { flex: 1; padding: 10px 6px; background: transparent; color: var(--text-muted); border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; text-align: center; white-space: nowrap; }
     .tab-btn.active { background: #1f2937; color: var(--accent); border: 1px solid var(--accent); }
-    
+    .tab-btn.extra { color: var(--accent-cyan); border: 1px dashed var(--accent-cyan); }
+
     .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); position: relative; transition: 0.3s; }
     .card.completed { border-color: var(--accent); opacity: 0.85; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -48,9 +53,8 @@
     .pr-banner { display: none; background: linear-gradient(135deg, #ff0055, #ffcc00); color: #000; font-weight: 900; font-size: 12px; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; animation: pulse 1s infinite alternate; }
     @keyframes pulse { 0% { transform: scale(0.98); } 100% { transform: scale(1.02); } }
 
-    /* Animated SVG Container */
-    .anim-container { width: 100%; height: 150px; background: #000; border-radius: 10px; border: 1px solid var(--border-color); margin: 10px 0; display: flex; align-items: center; justify-content: center; }
-    .anim-svg { width: 100%; height: 100%; }
+    .video-container { width: 100%; height: 200px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-color); margin: 10px 0; background: #000; }
+    .video-container iframe { width: 100%; height: 100%; border: none; }
 
     details { margin-bottom: 8px; font-size: 13px; color: var(--text-muted); }
     summary { cursor: pointer; color: var(--accent-cyan); font-size: 12px; font-weight: 700; margin-bottom: 4px; }
@@ -103,6 +107,9 @@
   <h1>💪 GYM <span>TRACKER PRO</span></h1>
   <div class="subtitle">Every-Other-Day Hypertrophy System</div>
   <div class="streak-badge">🔥 <span id="streak-counter">0</span>-Session Streak Active</div>
+
+  <div class="status-banner" id="missed-day-banner">⚠️ Missed session detected! Schedule shifted to keep workouts in sequence.</div>
+  <div class="archived-banner" id="archived-banner">✅ Workout Logged & Archived For Today</div>
 
   <div class="card">
     <div class="card-header"><span class="target-tag">Mass Gain Journey</span></div>
@@ -202,21 +209,6 @@
     let timerInterval;
     let rpeFeedback = {};
     let previousPrs = {};
-
-    // SVG Animation Generator
-    function getExerciseAnimation(type) {
-      if (type.includes("Squat")) {
-        return `<svg class="anim-svg" viewBox="0 0 200 120"><style>@keyframes squat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(30px);} } .bar{animation:squat 2.5s ease-in-out infinite;} .body{animation:squat 2.5s ease-in-out infinite;}</style><line x1="40" y1="20" x2="160" y2="20" stroke="#00ff87" stroke-width="6" class="bar"/><circle cx="100" cy="35" r="12" fill="#60efff" class="body"/><path d="M100 47 L100 80 L80 110 M100 80 L120 110" stroke="#60efff" stroke-width="6" stroke-linecap="round" fill="none" class="body"/></svg>`;
-      } else if (type.includes("Bench") || type.includes("Press")) {
-        return `<svg class="anim-svg" viewBox="0 0 200 120"><style>@keyframes press { 0%,100%{transform:translateY(0);} 50%{transform:translateY(35px);} } .bar{animation:press 2s ease-in-out infinite;}</style><rect x="50" y="85" width="100" height="10" fill="#1f2937"/><circle cx="100" cy="70" r="10" fill="#60efff"/><line x1="40" y1="35" x2="160" y2="35" stroke="#00ff87" stroke-width="6" class="bar"/></svg>`;
-      } else if (type.includes("Pulldown") || type.includes("Pull")) {
-        return `<svg class="anim-svg" viewBox="0 0 200 120"><style>@keyframes pulldown { 0%,100%{transform:translateY(0);} 50%{transform:translateY(40px);} } .bar{animation:pulldown 2.2s ease-in-out infinite;}</style><line x1="30" y1="15" x2="170" y2="15" stroke="#00ff87" stroke-width="6" class="bar"/><circle cx="100" cy="75" r="12" fill="#60efff"/></svg>`;
-      } else if (type.includes("Deadlift") || type.includes("Row")) {
-        return `<svg class="anim-svg" viewBox="0 0 200 120"><style>@keyframes row { 0%,100%{transform:translateY(30px);} 50%{transform:translateY(0px);} } .bar{animation:row 2s ease-in-out infinite;}</style><line x1="40" y1="50" x2="160" y2="50" stroke="#00ff87" stroke-width="6" class="bar"/><circle cx="100" cy="30" r="12" fill="#60efff"/></svg>`;
-      } else {
-        return `<svg class="anim-svg" viewBox="0 0 200 120"><style>@keyframes lift { 0%,100%{transform:translateY(20px);} 50%{transform:translateY(-10px);} } .bar{animation:lift 2s ease-in-out infinite;}</style><circle cx="100" cy="50" r="12" fill="#60efff"/><line x1="50" y1="40" x2="150" y2="40" stroke="#00ff87" stroke-width="6" class="bar"/></svg>`;
-      }
-    }
 
     window.startTimer = function(seconds) {
       clearInterval(timerInterval);
@@ -338,18 +330,20 @@
     }
 
     const exerciseData = {
-      "Barbell Back Squat": { isBarbell: true, defaultWeight: 30, tips: "Chest up, knees track over toes, squat parallel." },
-      "Goblet Squat (DB/KB)": { isBarbell: false, defaultWeight: 12, tips: "Hold weight close to chest, stay upright." },
-      "Leg Press Machine": { isBarbell: false, defaultWeight: 50, tips: "Lower smoothly, keep lower back flat against seat." },
-      "Barbell Bench Press": { isBarbell: true, defaultWeight: 30, tips: "Retract shoulder blades, lower bar to mid-chest." },
-      "Flat Dumbbell Press": { isBarbell: false, defaultWeight: 10, tips: "Elbows tucked at 45°, press straight upward." },
-      "Lat Pulldown": { isBarbell: false, defaultWeight: 25, tips: "Pull bar down to upper chest, drive elbows down." },
-      "Conventional Deadlift": { isBarbell: true, defaultWeight: 40, tips: "Hinge at hips, keep bar against shins, chest high." },
-      "Incline Dumbbell Press": { isBarbell: false, defaultWeight: 10, tips: "Bench at 30 degrees, press upward focusing on upper chest." },
-      "Seated Cable Row": { isBarbell: false, defaultWeight: 25, tips: "Pull handle toward navel, squeeze shoulder blades." },
-      "Dumbbell Overhead Press": { isBarbell: false, defaultWeight: 8, tips: "Brace core, press dumbbells straight up overhead." },
-      "Cable Face Pulls": { isBarbell: false, defaultWeight: 15, tips: "Pull rope to face height, flare elbows outward." },
-      "Dumbbell Lateral Raise": { isBarbell: false, defaultWeight: 6, tips: "Slight elbow bend, raise weights to shoulder level." }
+      "Barbell Back Squat": { isBarbell: true, defaultWeight: 30, videoId: "gcNh17Ckjgg", tips: "Chest up, knees track over toes, squat parallel." },
+      "Goblet Squat (DB/KB)": { isBarbell: false, defaultWeight: 12, videoId: "MeIiIdhvKL4", tips: "Hold weight close to chest, stay upright." },
+      "Leg Press Machine": { isBarbell: false, defaultWeight: 50, videoId: "IZxyjW7MPJQ", tips: "Lower smoothly, keep lower back flat against seat." },
+      "Barbell Bench Press": { isBarbell: true, defaultWeight: 30, videoId: "rT7DgCr-3pg", tips: "Retract shoulder blades, lower bar to mid-chest." },
+      "Flat Dumbbell Press": { isBarbell: false, defaultWeight: 10, videoId: "VmB1G1K7v94", tips: "Elbows tucked at 45°, press straight upward." },
+      "Lat Pulldown": { isBarbell: false, defaultWeight: 25, videoId: "CAwf7n6Luuc", tips: "Pull bar down to upper chest, drive elbows down." },
+      "Conventional Deadlift": { isBarbell: true, defaultWeight: 40, videoId: "op9kVnSso6Q", tips: "Hinge at hips, keep bar against shins, chest high." },
+      "Incline Dumbbell Press": { isBarbell: false, defaultWeight: 10, videoId: "8iPEnn-ltC8", tips: "Bench at 30 degrees, press upward focusing on upper chest." },
+      "Seated Cable Row": { isBarbell: false, defaultWeight: 25, videoId: "GZbfZ033fBo", tips: "Pull handle toward navel, squeeze shoulder blades." },
+      "Dumbbell Overhead Press": { isBarbell: false, defaultWeight: 8, videoId: "qEwKCR5JCog", tips: "Brace core, press dumbbells straight up overhead." },
+      "Cable Face Pulls": { isBarbell: false, defaultWeight: 15, videoId: "rep-qVOkqgk", tips: "Pull rope to face height, flare elbows outward." },
+      "Dumbbell Lateral Raise": { isBarbell: false, defaultWeight: 6, videoId: "3VcKaXpzqRo", tips: "Slight elbow bend, raise weights to shoulder level." },
+      "Dumbbell Bicep Curl": { isBarbell: false, defaultWeight: 8, videoId: "ykJmrZ5v0Oo", tips: "Squeeze bicep at peak, control lowering." },
+      "Tricep Rope Pushdown": { isBarbell: false, defaultWeight: 15, videoId: "vB5OHsJ3EME", tips: "Extend arms down, flare rope outward at bottom." }
     };
 
     const routineData = {
@@ -384,6 +378,11 @@
           { target: "Side Delts", options: ["Dumbbell Lateral Raise"] },
           { target: "Rear Delts", options: ["Cable Face Pulls"] }
         ]
+      ],
+      "extra": [
+        { target: "Arms", options: ["Dumbbell Bicep Curl"] },
+        { target: "Triceps", options: ["Tricep Rope Pushdown"] },
+        { target: "Shoulders", options: ["Dumbbell Lateral Raise"] }
       ]
     };
 
@@ -398,6 +397,7 @@
     }
 
     let activeDayIndex = 0;
+    let isExtraMode = false;
 
     window.setDuration = function(duration) {
       selectedDuration = duration;
@@ -411,22 +411,30 @@
       tabsContainer.innerHTML = "";
       schedule.forEach((item, idx) => {
         if (!item.isRest) {
-          tabsContainer.innerHTML += `<button class="tab-btn ${idx === activeDayIndex ? 'active' : ''}" onclick="selectDay(${idx})">${item.name}</button>`;
+          tabsContainer.innerHTML += `<button class="tab-btn ${(!isExtraMode && idx === activeDayIndex) ? 'active' : ''}" onclick="selectDay(${idx})">${item.name}</button>`;
         }
       });
+      tabsContainer.innerHTML += `<button class="tab-btn extra ${isExtraMode ? 'active' : ''}" onclick="selectExtraDay()">➕ Extra Workout</button>`;
     }
 
     window.selectDay = function(idx) {
+      isExtraMode = false;
       activeDayIndex = idx;
+      renderTabs();
+      renderExercises();
+    };
+
+    window.selectExtraDay = function() {
+      isExtraMode = true;
       renderTabs();
       renderExercises();
     };
 
     window.fetchRecommendation = async function(index) {
       const selectedEx = document.getElementById(`exercise-${index}`).value;
-      const data = exerciseData[selectedEx] || { isBarbell: false, defaultWeight: 20, tips: "Maintain strict form." };
+      const data = exerciseData[selectedEx] || { isBarbell: false, defaultWeight: 20, videoId: "gcNh17Ckjgg", tips: "Maintain strict form." };
       
-      document.getElementById(`anim-box-${index}`).innerHTML = getExerciseAnimation(selectedEx);
+      document.getElementById(`video-box-${index}`).innerHTML = `<iframe src="https://www.youtube.com/embed/${data.videoId}?rel=0" allowfullscreen></iframe>`;
       document.getElementById(`tips-${index}`).innerText = data.tips;
 
       const calcContainer = document.getElementById(`tool-btns-container-${index}`);
@@ -479,12 +487,15 @@
     function renderExercises() {
       const container = document.getElementById('workout-container');
       container.innerHTML = "";
-      const currentTemplate = routineData[selectedDuration][schedule[activeDayIndex].templateIndex];
+      
+      const currentTemplate = isExtraMode 
+        ? routineData["extra"] 
+        : routineData[selectedDuration][schedule[activeDayIndex].templateIndex];
 
       currentTemplate.forEach((ex, index) => {
         const optionsHTML = ex.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
         const defaultEx = ex.options[0];
-        const defaultData = exerciseData[defaultEx] || { tips: "Keep core tight." };
+        const defaultData = exerciseData[defaultEx] || { videoId: "gcNh17Ckjgg", tips: "Keep core tight." };
 
         container.innerHTML += `
           <div class="card" id="card-${index}">
@@ -495,7 +506,9 @@
             <div class="recommendation-box" id="rec-box-${index}">Calculating target recommendation...</div>
             <div id="tool-btns-container-${index}"></div>
 
-            <div class="anim-container" id="anim-box-${index}">${getExerciseAnimation(defaultEx)}</div>
+            <div class="video-container" id="video-box-${index}">
+              <iframe src="https://www.youtube.com/embed/${defaultData.videoId}?rel=0" allowfullscreen></iframe>
+            </div>
             
             <details>
               <summary>📖 View Form & Safety Cues</summary>
@@ -570,6 +583,29 @@
     if (db) {
       (async () => {
         try {
+          const today = new Date().toISOString().split('T')[0];
+
+          // Check for missed day / calendar gaps
+          const lastLogRef = doc(db, "user_profile", "last_workout");
+          const lastLogSnap = await getDoc(lastLogRef);
+
+          if (lastLogSnap.exists()) {
+            const lastDateStr = lastLogSnap.data().date;
+            const lastDate = new Date(lastDateStr);
+            const currentDate = new Date(today);
+            const diffDays = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
+
+            if (diffDays > 2) {
+              document.getElementById('missed-day-banner').style.display = 'block';
+            }
+
+            // Check if today is already completed
+            if (lastDateStr === today) {
+              document.getElementById('archived-banner').style.display = 'block';
+              document.getElementById('save-workout-btn').innerText = 'WORKOUT ARCHIVED FOR TODAY ✅';
+            }
+          }
+
           const weightRef = doc(db, "user_profile", "body_weight");
           const weightSnap = await getDoc(weightRef);
           if (weightSnap.exists()) {
@@ -589,7 +625,7 @@
       })();
 
       document.getElementById('save-workout-btn').addEventListener('click', async () => {
-        const currentTemplate = routineData[selectedDuration][schedule[activeDayIndex].templateIndex];
+        const currentTemplate = isExtraMode ? routineData["extra"] : routineData[selectedDuration][schedule[activeDayIndex].templateIndex];
         const logData = {};
         const today = new Date().toISOString().split('T')[0];
 
@@ -610,19 +646,24 @@
         }
 
         try {
-          await setDoc(doc(db, "workout_logs", `${today}_${schedule[activeDayIndex].name.replace(/\s+/g, '')}`), {
-            day: schedule[activeDayIndex].name,
+          const logName = isExtraMode ? "ExtraWorkout" : schedule[activeDayIndex].name.replace(/\s+/g, '');
+          await setDoc(doc(db, "workout_logs", `${today}_${logName}`), {
+            day: isExtraMode ? "Extra Workout" : schedule[activeDayIndex].name,
             duration: selectedDuration,
             date: today,
             exercises: logData
           });
+
+          await setDoc(doc(db, "user_profile", "last_workout"), { date: today, dayName: schedule[activeDayIndex].name });
 
           const streakEl = document.getElementById('streak-counter');
           const newStreak = (parseInt(streakEl.innerText) || 0) + 1;
           streakEl.innerText = newStreak;
           await setDoc(doc(db, "user_profile", "streak"), { count: newStreak });
 
-          alert(`Success! Saved ${selectedDuration} session logs.`);
+          document.getElementById('archived-banner').style.display = 'block';
+          document.getElementById('save-workout-btn').innerText = 'WORKOUT ARCHIVED FOR TODAY ✅';
+          alert(`Success! Logged and archived.`);
         } catch (e) { alert("Error saving: " + e.message); }
       });
 
