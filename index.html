@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Gym Tracker - Cyber Pro</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg-color: #080b10;
@@ -146,10 +145,6 @@
         <div class="progress-fill" id="goal-progress-bar"></div>
       </div>
     </div>
-    <details style="margin-top: 10px;">
-      <summary>📈 View Weight Chart</summary>
-      <div style="margin-top: 10px;"><canvas id="weightChart"></canvas></div>
-    </details>
     <div class="input-row-3" style="align-items: flex-end; margin-top:10px;">
       <div class="input-group-3" style="flex:2;">
         <label id="log-weight-label">Log Weight (kg)</label>
@@ -187,6 +182,7 @@
 
   <div id="workout-container">Loading routine...</div>
 
+  <!-- Additional Exercise Box -->
   <div class="add-exercise-box">
     <label style="color:var(--accent-cyan);">➕ ADD ADDITIONAL EXERCISE</label>
     <select id="additional-exercise-select">
@@ -396,4 +392,407 @@
       }
     };
 
-    window.
+    window.showModal = function(icon, title, text) {
+      document.getElementById('modal-icon').innerText = icon;
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-results').innerHTML = text;
+      document.getElementById('tools-modal').style.display = "flex";
+    };
+
+    window.closeToolsModal = function() {
+      document.getElementById('tools-modal').style.display = "none";
+    };
+
+    window.openWarmupCalc = function(weight) {
+      const target = parseFloat(weight) || 20;
+      const set1 = Math.max(10, (target * 0.5)).toFixed(1);
+      const set2 = Math.max(15, (target * 0.75)).toFixed(1);
+
+      showModal('🔥', 'Warm-Up Calculator', `
+        Target Working Weight: <b>${target} ${currentUnit}</b><br><br>
+        • <b>Set 1:</b> ${set1} ${currentUnit} × 10 reps<br>
+        • <b>Set 2:</b> ${set2} ${currentUnit} × 5 reps<br>
+        • <b>Working Sets:</b> ${target} ${currentUnit} × 8–10 reps
+      `);
+    };
+
+    window.openPlateCalc = function(weight) {
+      const barWeight = currentUnit === 'lbs' ? 45 : 20;
+      const target = parseFloat(weight) || barWeight;
+      
+      if (target < barWeight) {
+        showModal('🧮', 'Plate Calculator', `Weight is less than empty ${barWeight} ${currentUnit} Olympic barbell!`);
+      } else {
+        let sideWeight = (target - barWeight) / 2;
+        const plates = currentUnit === 'lbs' ? [45, 35, 25, 10, 5, 2.5] : [20, 15, 10, 5, 2.5, 1.25];
+        let breakdown = [];
+        
+        plates.forEach(p => {
+          let count = Math.floor(sideWeight / p);
+          if (count > 0) {
+            breakdown.push(`<b>${count}x ${p}${currentUnit}</b> plate`);
+            sideWeight -= count * p;
+          }
+        });
+
+        const text = breakdown.length ? `Per side (on a ${barWeight}${currentUnit} bar):<br>${breakdown.join('<br>')}` : `Empty ${barWeight}${currentUnit} Barbell!`;
+        showModal('🧮', 'Plate Calculator', text);
+      }
+    };
+
+    window.adjustVal = function(id, delta) {
+      const input = document.getElementById(id);
+      if (!input) return;
+      let val = parseFloat(input.value) || 0;
+      const step = (id.includes('weight') && currentUnit === 'lbs') ? delta * 2.2 : delta;
+      input.value = Math.max(0, val + step).toFixed(1);
+      const index = id.split('-')[1];
+      if (id.includes('weight')) checkPr(index);
+    };
+
+    function updateGoalUI(currentWeight) {
+      document.getElementById('current-weight-label').innerHTML = `Current: <b>${currentWeight.toFixed(1)} ${currentUnit}</b>`;
+      const startW = currentUnit === 'lbs' ? START_WEIGHT_KG * 2.20462 : START_WEIGHT_KG;
+      const goalW = currentUnit === 'lbs' ? GOAL_WEIGHT_KG * 2.20462 : GOAL_WEIGHT_KG;
+      const gained = Math.max(0, currentWeight - startW);
+      const totalToGain = goalW - startW;
+      const progressPct = Math.min(100, (gained / totalToGain) * 100);
+      document.getElementById('goal-progress-bar').style.width = `${progressPct}%`;
+    }
+
+    window.setDuration = function(duration) {
+      selectedDuration = duration;
+      document.getElementById('toggle-45').classList.toggle('active', duration === '45m');
+      document.getElementById('toggle-60').classList.toggle('active', duration === '60m');
+      renderExercises();
+    };
+
+    function renderTabs() {
+      const tabsContainer = document.getElementById('day-tabs');
+      tabsContainer.innerHTML = "";
+      schedule.forEach((item, idx) => {
+        if (!item.isRest) {
+          tabsContainer.innerHTML += `<button class="tab-btn ${(!isExtraMode && idx === activeDayIndex) ? 'active' : ''}" onclick="selectDay(${idx})">${item.name}</button>`;
+        }
+      });
+      tabsContainer.innerHTML += `<button class="tab-btn extra ${isExtraMode ? 'active' : ''}" onclick="selectExtraDay()">➕ Extra Workout</button>`;
+    }
+
+    window.selectDay = function(idx) {
+      isExtraMode = false;
+      activeDayIndex = idx;
+      renderTabs();
+      renderExercises();
+    };
+
+    window.selectExtraDay = function() {
+      isExtraMode = true;
+      renderTabs();
+      renderExercises();
+    };
+
+    window.fetchRecommendation = function(index) {
+      const exSelect = document.getElementById(`exercise-${index}`);
+      if (!exSelect) return;
+
+      const selectedEx = exSelect.value;
+      const data = exerciseData[selectedEx] || { isBarbell: false, defaultWeight: 20, videoId: "gcNh17Ckjgg", tips: "Maintain strict form." };
+      
+      const videoBox = document.getElementById(`video-box-${index}`);
+      if (videoBox) videoBox.innerHTML = `<iframe src="https://www.youtube.com/embed/${data.videoId}?rel=0" allowfullscreen></iframe>`;
+      
+      const tipsBox = document.getElementById(`tips-${index}`);
+      if (tipsBox) tipsBox.innerText = data.tips;
+
+      const calcContainer = document.getElementById(`tool-btns-container-${index}`);
+      if (calcContainer) {
+        calcContainer.innerHTML = `
+          <button class="btn-tool" onclick="openWarmupCalc(document.getElementById('weight-${index}').value)">🔥 Warm-Up Sets</button>
+          ${data.isBarbell ? `<button class="btn-tool" onclick="openPlateCalc(document.getElementById('weight-${index}').value)">🧮 Barbell Plates</button>` : ''}
+        `;
+      }
+
+      const recBox = document.getElementById(`rec-box-${index}`);
+      const weightInput = document.getElementById(`weight-${index}`);
+
+      let targetWeight = currentUnit === 'lbs' ? (data.defaultWeight * 2.20462) : data.defaultWeight;
+
+      const historyRaw = localStorage.getItem(`history_${selectedEx}`);
+      if (historyRaw) {
+        try {
+          const lastData = JSON.parse(historyRaw);
+          let lastWeight = parseFloat(lastData.weight) || data.defaultWeight;
+          if (currentUnit === 'lbs') lastWeight *= 2.20462;
+          previousPrs[selectedEx] = lastWeight;
+
+          if (lastData.rpe === 'easy') {
+            targetWeight = lastWeight + (currentUnit === 'lbs' ? 5 : 2.5);
+            if (recBox) recBox.innerHTML = `🎯 <b>Smart Rec (Felt Easy):</b> Increase to <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8 reps.`;
+          } else {
+            targetWeight = lastWeight;
+            if (recBox) recBox.innerHTML = `🎯 <b>Smart Rec:</b> Continue at <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
+          }
+        } catch(e) {}
+      } else {
+        if (recBox) recBox.innerHTML = `🎯 <b>First Time Target:</b> Start with <b>${targetWeight.toFixed(1)} ${currentUnit}</b> × 8–10 reps.`;
+      }
+
+      if (weightInput) weightInput.value = targetWeight.toFixed(1);
+    };
+
+    window.addAdditionalExercise = function() {
+      const select = document.getElementById('additional-exercise-select');
+      const chosenEx = select.value;
+      if (!chosenEx) return alert("Please select an exercise from the dropdown!");
+
+      const container = document.getElementById('workout-container');
+      const newIndex = container.children.length;
+      const data = exerciseData[chosenEx];
+
+      const cardHTML = `
+        <div class="card" id="card-${newIndex}">
+          <div class="pr-banner" id="pr-banner-${newIndex}"></div>
+          <div class="card-header"><span class="target-tag">${data.target || 'Bonus'}</span></div>
+          <select id="exercise-${newIndex}" onchange="fetchRecommendation(${newIndex})">
+            <option value="${chosenEx}" selected>${chosenEx}</option>
+          </select>
+          
+          <div class="recommendation-box" id="rec-box-${newIndex}">Calculating target recommendation...</div>
+          <div id="tool-btns-container-${newIndex}"></div>
+
+          <div class="video-container" id="video-box-${newIndex}">
+            <iframe src="https://www.youtube.com/embed/${data.videoId}?rel=0" allowfullscreen></iframe>
+          </div>
+          
+          <details>
+            <summary>📖 View Form & Safety Cues</summary>
+            <div class="form-tips" id="tips-${newIndex}">${data.tips}</div>
+          </details>
+          <div class="input-row-3">
+            <div class="input-group-3">
+              <label>Sets</label>
+              <div class="stepper-container">
+                <button class="stepper-btn" onclick="adjustVal('sets-${newIndex}', -1)">-</button>
+                <input type="number" id="sets-${newIndex}" value="3">
+                <button class="stepper-btn" onclick="adjustVal('sets-${newIndex}', 1)">+</button>
+              </div>
+            </div>
+            <div class="input-group-3">
+              <label>Weight (${currentUnit})</label>
+              <div class="stepper-container">
+                <button class="stepper-btn" onclick="adjustVal('weight-${newIndex}', -2.5)">-</button>
+                <input type="number" id="weight-${newIndex}" oninput="checkPr(${newIndex})">
+                <button class="stepper-btn" onclick="adjustVal('weight-${newIndex}', 2.5)">+</button>
+              </div>
+            </div>
+            <div class="input-group-3">
+              <label>Reps</label>
+              <div class="stepper-container">
+                <button class="stepper-btn" onclick="adjustVal('reps-${newIndex}', -1)">-</button>
+                <input type="number" id="reps-${newIndex}" value="8">
+                <button class="stepper-btn" onclick="adjustVal('reps-${newIndex}', 1)">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="complete-box">
+            <div class="complete-header">
+              <label for="complete-check-${newIndex}">Mark Exercise Complete</label>
+              <input type="checkbox" id="complete-check-${newIndex}" onchange="toggleExerciseComplete(${newIndex})">
+            </div>
+            <div class="rpe-selector" id="rpe-box-${newIndex}">
+              <div class="rpe-title">How did this exercise feel?</div>
+              <div class="rpe-btn-group">
+                <button class="rpe-btn easy" id="rpe-easy-${newIndex}" onclick="selectRPE(${newIndex}, 'easy')">🟢 Easy</button>
+                <button class="rpe-btn ok" id="rpe-ok-${newIndex}" onclick="selectRPE(${newIndex}, 'ok')">🟡 Just Right</button>
+                <button class="rpe-btn hard" id="rpe-hard-${newIndex}" onclick="selectRPE(${newIndex}, 'hard')">🔴 Hard</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      container.insertAdjacentHTML('beforeend', cardHTML);
+      fetchRecommendation(newIndex);
+      select.value = "";
+    };
+
+    function renderExercises() {
+      const container = document.getElementById('workout-container');
+      container.innerHTML = "";
+      
+      const currentTemplate = isExtraMode 
+        ? routineData["extra"] 
+        : routineData[selectedDuration][schedule[activeDayIndex].templateIndex];
+
+      currentTemplate.forEach((ex, index) => {
+        const optionsHTML = ex.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+        const defaultEx = ex.options[0];
+        const defaultData = exerciseData[defaultEx] || { videoId: "gcNh17Ckjgg", tips: "Keep core tight." };
+
+        container.innerHTML += `
+          <div class="card" id="card-${index}">
+            <div class="pr-banner" id="pr-banner-${index}"></div>
+            <div class="card-header"><span class="target-tag">${ex.target}</span></div>
+            <select id="exercise-${index}" onchange="fetchRecommendation(${index})">${optionsHTML}</select>
+            
+            <div class="recommendation-box" id="rec-box-${index}">Calculating target recommendation...</div>
+            <div id="tool-btns-container-${index}"></div>
+
+            <div class="video-container" id="video-box-${index}">
+              <iframe src="https://www.youtube.com/embed/${defaultData.videoId}?rel=0" allowfullscreen></iframe>
+            </div>
+            
+            <details>
+              <summary>📖 View Form & Safety Cues</summary>
+              <div class="form-tips" id="tips-${index}">${defaultData.tips}</div>
+            </details>
+            <div class="input-row-3">
+              <div class="input-group-3">
+                <label>Sets</label>
+                <div class="stepper-container">
+                  <button class="stepper-btn" onclick="adjustVal('sets-${index}', -1)">-</button>
+                  <input type="number" id="sets-${index}" value="3">
+                  <button class="stepper-btn" onclick="adjustVal('sets-${index}', 1)">+</button>
+                </div>
+              </div>
+              <div class="input-group-3">
+                <label>Weight (${currentUnit})</label>
+                <div class="stepper-container">
+                  <button class="stepper-btn" onclick="adjustVal('weight-${index}', -2.5)">-</button>
+                  <input type="number" id="weight-${index}" oninput="checkPr(${index})">
+                  <button class="stepper-btn" onclick="adjustVal('weight-${index}', 2.5)">+</button>
+                </div>
+              </div>
+              <div class="input-group-3">
+                <label>Reps</label>
+                <div class="stepper-container">
+                  <button class="stepper-btn" onclick="adjustVal('reps-${index}', -1)">-</button>
+                  <input type="number" id="reps-${index}" value="8">
+                  <button class="stepper-btn" onclick="adjustVal('reps-${index}', 1)">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="complete-box">
+              <div class="complete-header">
+                <label for="complete-check-${index}">Mark Exercise Complete</label>
+                <input type="checkbox" id="complete-check-${index}" onchange="toggleExerciseComplete(${index})">
+              </div>
+              <div class="rpe-selector" id="rpe-box-${index}">
+                <div class="rpe-title">How did this exercise feel?</div>
+                <div class="rpe-btn-group">
+                  <button class="rpe-btn easy" id="rpe-easy-${index}" onclick="selectRPE(${index}, 'easy')">🟢 Easy</button>
+                  <button class="rpe-btn ok" id="rpe-ok-${index}" onclick="selectRPE(${index}, 'ok')">🟡 Just Right</button>
+                  <button class="rpe-btn hard" id="rpe-hard-${index}" onclick="selectRPE(${index}, 'hard')">🔴 Hard</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        setTimeout(() => fetchRecommendation(index), 100);
+      });
+    }
+
+    // Initialize UI Elements
+    renderTabs();
+    renderExercises();
+    updateGoalUI(START_WEIGHT_KG);
+
+    // Load Saved State from LocalStorage
+    const todayStr = new Date().toISOString().split('T')[0];
+    const savedToday = localStorage.getItem(`workout_${todayStr}`);
+    if (savedToday) {
+      document.getElementById('archived-banner').style.display = 'block';
+      document.getElementById('save-workout-btn').innerText = 'WORKOUT ARCHIVED FOR TODAY ✅';
+      try {
+        const parsed = JSON.parse(savedToday);
+        setTimeout(() => {
+          Object.keys(parsed).forEach((exName, idx) => {
+            const exInput = document.getElementById(`exercise-${idx}`);
+            if (exInput) {
+              exInput.value = exName;
+              if (document.getElementById(`sets-${idx}`)) document.getElementById(`sets-${idx}`).value = parsed[exName].sets || 3;
+              if (document.getElementById(`weight-${idx}`)) document.getElementById(`weight-${idx}`).value = parsed[exName].weight || 0;
+              if (document.getElementById(`reps-${idx}`)) document.getElementById(`reps-${idx}`).value = parsed[exName].reps || 8;
+              if (document.getElementById(`complete-check-${idx}`)) {
+                document.getElementById(`complete-check-${idx}`).checked = true;
+                toggleExerciseComplete(idx);
+              }
+            }
+          });
+        }, 500);
+      } catch(e) {}
+    }
+
+    const savedStreak = localStorage.getItem('user_streak') || "0";
+    document.getElementById('streak-counter').innerText = savedStreak;
+
+    const savedBodyW = localStorage.getItem('latest_body_weight');
+    if (savedBodyW) {
+      const val = parseFloat(savedBodyW);
+      document.getElementById('body-weight-input').value = val;
+      updateGoalUI(val);
+    }
+
+    // Direct Hardened Save Handler
+    document.getElementById('save-workout-btn').onclick = function() {
+      try {
+        const container = document.getElementById('workout-container');
+        const totalCards = container.children.length;
+        const logData = {};
+
+        for (let index = 0; index < totalCards; index++) {
+          const exElem = document.getElementById(`exercise-${index}`);
+          if (!exElem) continue;
+
+          const selectedEx = exElem.value;
+          const sets = document.getElementById(`sets-${index}`) ? document.getElementById(`sets-${index}`).value : 3;
+          const weight = document.getElementById(`weight-${index}`) ? document.getElementById(`weight-${index}`).value : 0;
+          const reps = document.getElementById(`reps-${index}`) ? document.getElementById(`reps-${index}`).value : 0;
+          const rpe = rpeFeedback[index] || 'ok';
+
+          logData[selectedEx] = { sets, weight, reps, rpe, unit: currentUnit };
+          localStorage.setItem(`history_${selectedEx}`, JSON.stringify({ weight, reps, sets, rpe, unit: currentUnit }));
+        }
+
+        localStorage.setItem(`workout_${todayStr}`, JSON.stringify(logData));
+
+        const currentStreak = parseInt(localStorage.getItem('user_streak') || "0") + 1;
+        localStorage.setItem('user_streak', currentStreak.toString());
+        document.getElementById('streak-counter').innerText = currentStreak;
+
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+        document.getElementById('archived-banner').style.display = 'block';
+        document.getElementById('save-workout-btn').innerText = 'WORKOUT ARCHIVED FOR TODAY ✅';
+
+        showModal('🎉', 'Workout Logged!', `
+          Awesome work! Your ${selectedDuration} session logs have been saved.<br><br>
+          • <b>Streak Updated:</b> ${currentStreak} Sessions<br>
+          • <b>Date:</b> ${todayStr}<br><br>
+          See you next session!
+        `);
+
+      } catch (err) {
+        alert("Save Error: " + err.message);
+      }
+    };
+
+    // Body Weight Save Handler
+    document.getElementById('save-weight-btn').onclick = function() {
+      try {
+        const weightVal = parseFloat(document.getElementById('body-weight-input').value);
+        if (!weightVal) return alert("Enter weight!");
+
+        localStorage.setItem('latest_body_weight', weightVal.toString());
+        updateGoalUI(weightVal);
+
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        showModal('⚖️', 'Weight Updated!', `Logged <b>${weightVal} ${currentUnit}</b> for today. Progress toward 70kg updated!`);
+      } catch (err) {
+        alert("Weight Save Error: " + err.message);
+      }
+    };
+  </script>
+</body>
+</html>
