@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Gym Tracker - Cyber Edition Pro</title>
+  <title>Smart Gym Tracker - Cyber Pro</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -25,43 +25,40 @@
     h1 span { color: var(--accent); text-shadow: 0 0 12px var(--accent-glow); }
     .subtitle { color: var(--text-muted); font-size: 12px; margin-bottom: 16px; font-weight: 500; }
     
-    /* Streak Badge */
     .streak-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(96, 239, 255, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; }
 
-    /* Duration Toggle */
     .duration-toggle { display: flex; background: #000; padding: 4px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 16px; }
     .toggle-btn { flex: 1; padding: 10px; background: transparent; color: var(--text-muted); border: none; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 12px; transition: 0.3s; text-align: center; }
     .toggle-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent-glow); }
 
-    /* Tabs */
     .tabs { display: flex; gap: 6px; margin-bottom: 16px; background: var(--card-bg); padding: 4px; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; }
     .tab-btn { flex: 1; padding: 10px 6px; background: transparent; color: var(--text-muted); border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 11px; text-align: center; white-space: nowrap; }
     .tab-btn.active { background: #1f2937; color: var(--accent); border: 1px solid var(--accent); }
     
-    /* Cards */
-    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); position: relative; }
+    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); position: relative; transition: 0.3s; }
+    .card.completed { border-color: var(--accent); opacity: 0.6; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .target-tag { background: rgba(0, 255, 135, 0.1); color: var(--accent); font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(0, 255, 135, 0.2); }
     
-    /* Goal Tracker */
     .goal-tracker { margin-bottom: 12px; }
     .goal-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
     .progress-bg { background: #000; border-radius: 10px; height: 12px; border: 1px solid var(--border-color); overflow: hidden; padding: 2px; }
     .progress-fill { background: linear-gradient(90deg, var(--accent), var(--accent-cyan)); height: 100%; width: 0%; border-radius: 8px; transition: width 0.5s ease-in-out; }
 
-    /* GIFs & Guides */
-    .gif-guide { width: 100%; height: 180px; border-radius: 10px; object-fit: cover; margin: 10px 0; border: 1px solid var(--border-color); background: #000; }
+    .img-guide { width: 100%; height: 180px; border-radius: 10px; object-fit: cover; margin: 10px 0; border: 1px solid var(--border-color); background: #000; }
     details { margin-bottom: 8px; font-size: 13px; color: var(--text-muted); }
     summary { cursor: pointer; color: var(--accent-cyan); font-size: 12px; font-weight: 700; margin-bottom: 4px; }
     .form-tips { background: #080b10; padding: 12px; border-radius: 8px; margin-top: 6px; border-left: 3px solid var(--accent-cyan); line-height: 1.5; font-size: 12px; }
     
     .checklist-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: #d1d5db; }
-    .checklist-item input { width: auto; margin: 0; }
+    .checklist-item input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+    .complete-box { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; margin-top: 12px; }
+    .complete-box label { margin: 0; font-size: 12px; color: var(--accent); font-weight: 800; cursor: pointer; }
 
     .recommendation-box { background: rgba(0, 255, 135, 0.08); border: 1px dashed var(--accent); border-radius: 8px; padding: 10px; font-size: 12px; color: #fff; margin-bottom: 12px; }
     .recommendation-box b { color: var(--accent); }
 
-    /* Inputs & Steppers */
     label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 4px; font-weight: 800; }
     select { width: 100%; padding: 12px; background: #080b10; color: #fff; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; font-size: 14px; font-weight: 700; }
     .input-row { display: flex; gap: 10px; }
@@ -71,13 +68,11 @@
     .stepper-btn:active { background: var(--accent); color: #000; }
     .stepper-container input { width: 100%; border: none; background: transparent; text-align: center; padding: 10px 4px; font-size: 15px; font-weight: 700; color: #fff; }
 
-    /* Rest Timer Floating Bar */
     .timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #111620; border-top: 2px solid var(--accent); padding: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.8); z-index: 99; }
     .timer-text { font-size: 16px; font-weight: 900; color: var(--accent); }
     .timer-controls { display: flex; gap: 6px; }
     .timer-btn { background: #1f2937; color: #fff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; }
 
-    /* Plate Calc Button & Modal */
     .plate-calc-btn { background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; cursor: pointer; margin-bottom: 8px; display: inline-block; }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
     .modal-content { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 20px; width: 100%; max-width: 360px; text-align: center; }
@@ -92,7 +87,6 @@
   <div class="subtitle">Every-Other-Day Hypertrophy System</div>
   <div class="streak-badge">🔥 <span id="streak-counter">0</span>-Session Streak Active</div>
 
-  <!-- Body Mass Goal & Chart Section -->
   <div class="card">
     <div class="card-header"><span class="target-tag">Mass Gain Journey</span></div>
     <div class="goal-tracker">
@@ -118,7 +112,6 @@
     </div>
   </div>
 
-  <!-- Duration Toggle -->
   <div class="duration-toggle">
     <button class="toggle-btn active" id="toggle-45" onclick="setDuration('45m')">⚡ 45 MIN SESSION</button>
     <button class="toggle-btn" id="toggle-60" onclick="setDuration('60m')">🔥 60 MIN SESSION</button>
@@ -126,7 +119,6 @@
 
   <div class="tabs" id="day-tabs"></div>
 
-  <!-- Pre-Workout Prep -->
   <div class="card">
     <details>
       <summary>🥗 Pre-Workout Fuel Options</summary>
@@ -150,7 +142,6 @@
 
   <button class="btn-primary" id="save-workout-btn">SAVE WORKOUT LOG</button>
 
-  <!-- Floating Rest Timer -->
   <div class="timer-bar">
     <div>⏱️ Rest Timer: <span class="timer-text" id="timer-display">Ready</span></div>
     <div class="timer-controls">
@@ -160,7 +151,6 @@
     </div>
   </div>
 
-  <!-- Plate Calculator Modal -->
   <div class="modal" id="plate-modal">
     <div class="modal-content">
       <h3 style="color:var(--accent); margin-top:0;">🧮 Barbell Plate Calculator</h3>
@@ -194,7 +184,6 @@
     let selectedDuration = "45m";
     let timerInterval;
 
-    // Timer Logic
     window.startTimer = function(seconds) {
       clearInterval(timerInterval);
       let timeLeft = seconds;
@@ -212,7 +201,17 @@
       }, 1000);
     };
 
-    // Plate Calc Logic
+    window.toggleExerciseComplete = function(index) {
+      const checkbox = document.getElementById(`complete-check-${index}`);
+      const card = document.getElementById(`card-${index}`);
+      if (checkbox.checked) {
+        card.classList.add('completed');
+        startTimer(90); // Auto launches 90-second rest timer
+      } else {
+        card.classList.remove('completed');
+      }
+    };
+
     window.openPlateCalc = function(weight) {
       const barWeight = 20;
       const target = parseFloat(weight) || 20;
@@ -242,7 +241,6 @@
       document.getElementById('plate-modal').style.display = "none";
     };
 
-    // Steppers Logic
     window.adjustVal = function(id, delta) {
       const input = document.getElementById(id);
       let val = parseFloat(input.value) || 0;
@@ -258,18 +256,18 @@
     }
 
     const exerciseData = {
-      "Barbell Back Squat": { isBarbell: true, defaultWeight: 30, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdW1uZWJkZzVrbHFjcWFnbnBrZGkzeGF6a3VubmQ3NDdrM2dxeHdyZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKTvbeL32R9CqL6/giphy.gif", tips: "Chest up, knees track over toes, squat parallel." },
-      "Goblet Squat (DB/KB)": { isBarbell: false, defaultWeight: 12, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdW1uZWJkZzVrbHFjcWFnbnBrZGkzeGF6a3VubmQ3NDdrM2dxeHdyZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKTvbeL32R9CqL6/giphy.gif", tips: "Hold weight close to chest, stay upright." },
-      "Leg Press Machine": { isBarbell: false, defaultWeight: 50, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdW1uZWJkZzVrbHFjcWFnbnBrZGkzeGF6a3VubmQ3NDdrM2dxeHdyZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKTvbeL32R9CqL6/giphy.gif", tips: "Lower smoothly, keep lower back flat against seat." },
-      "Barbell Bench Press": { isBarbell: true, defaultWeight: 30, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Retract shoulder blades, lower bar to mid-chest." },
-      "Flat Dumbbell Press": { isBarbell: false, defaultWeight: 10, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Elbows tucked at 45°, press straight upward." },
-      "Lat Pulldown": { isBarbell: false, defaultWeight: 25, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXkyenltOW5xNHIwcGJjNmE0OXl3dXFpMnhraXp4ZHZtbHRoMGFhYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT39D2A6f22E3A0f2w/giphy.gif", tips: "Pull bar down to upper chest, drive elbows down." },
-      "Conventional Deadlift": { isBarbell: true, defaultWeight: 40, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdW1uZWJkZzVrbHFjcWFnbnBrZGkzeGF6a3VubmQ3NDdrM2dxeHdyZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKTvbeL32R9CqL6/giphy.gif", tips: "Hinge at hips, keep bar against shins, chest high." },
-      "Incline Dumbbell Press": { isBarbell: false, defaultWeight: 10, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Bench at 30 degrees, press upward focusing on upper chest." },
-      "Seated Cable Row": { isBarbell: false, defaultWeight: 25, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXkyenltOW5xNHIwcGJjNmE0OXl3dXFpMnhraXp4ZHZtbHRoMGFhYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT39D2A6f22E3A0f2w/giphy.gif", tips: "Pull handle toward navel, squeeze shoulder blades." },
-      "Dumbbell Overhead Press": { isBarbell: false, defaultWeight: 8, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Brace core, press dumbbells straight up overhead." },
-      "Cable Face Pulls": { isBarbell: false, defaultWeight: 15, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXkyenltOW5xNHIwcGJjNmE0OXl3dXFpMnhraXp4ZHZtbHRoMGFhYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT39D2A6f22E3A0f2w/giphy.gif", tips: "Pull rope to face height, flare elbows outward." },
-      "Dumbbell Lateral Raise": { isBarbell: false, defaultWeight: 6, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Slight elbow bend, raise weights to shoulder level." }
+      "Barbell Back Squat": { isBarbell: true, defaultWeight: 30, img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=600&q=80", tips: "Chest up, knees track over toes, squat parallel." },
+      "Goblet Squat (DB/KB)": { isBarbell: false, defaultWeight: 12, img: "https://images.unsplash.com/photo-1566241142559-40e1dab266c6?auto=format&fit=crop&w=600&q=80", tips: "Hold weight close to chest, stay upright." },
+      "Leg Press Machine": { isBarbell: false, defaultWeight: 50, img: "https://images.unsplash.com/photo-1534367507873-d2d7e24c797f?auto=format&fit=crop&w=600&q=80", tips: "Lower smoothly, keep lower back flat against seat." },
+      "Barbell Bench Press": { isBarbell: true, defaultWeight: 30, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Retract shoulder blades, lower bar to mid-chest." },
+      "Flat Dumbbell Press": { isBarbell: false, defaultWeight: 10, img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80", tips: "Elbows tucked at 45°, press straight upward." },
+      "Lat Pulldown": { isBarbell: false, defaultWeight: 25, img: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&q=80", tips: "Pull bar down to upper chest, drive elbows down." },
+      "Conventional Deadlift": { isBarbell: true, defaultWeight: 40, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Hinge at hips, keep bar against shins, chest high." },
+      "Incline Dumbbell Press": { isBarbell: false, defaultWeight: 10, img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Bench at 30 degrees, press upward focusing on upper chest." },
+      "Seated Cable Row": { isBarbell: false, defaultWeight: 25, img: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80", tips: "Pull handle toward navel, squeeze shoulder blades." },
+      "Dumbbell Overhead Press": { isBarbell: false, defaultWeight: 8, img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Brace core, press dumbbells straight up overhead." },
+      "Cable Face Pulls": { isBarbell: false, defaultWeight: 15, img: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80", tips: "Pull rope to face height, flare elbows outward." },
+      "Dumbbell Lateral Raise": { isBarbell: false, defaultWeight: 6, img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80", tips: "Slight elbow bend, raise weights to shoulder level." }
     };
 
     const routineData = {
@@ -344,9 +342,9 @@
 
     window.fetchRecommendation = async function(index) {
       const selectedEx = document.getElementById(`exercise-${index}`).value;
-      const data = exerciseData[selectedEx] || { isBarbell: false, defaultWeight: 20, gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Maintain strict form." };
+      const data = exerciseData[selectedEx] || { isBarbell: false, defaultWeight: 20, img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Maintain strict form." };
       
-      document.getElementById(`gif-${index}`).src = data.gif;
+      document.getElementById(`img-${index}`).src = data.img;
       document.getElementById(`tips-${index}`).innerText = data.tips;
 
       const calcContainer = document.getElementById(`plate-calc-container-${index}`);
@@ -397,17 +395,17 @@
       currentTemplate.forEach((ex, index) => {
         const optionsHTML = ex.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
         const defaultEx = ex.options[0];
-        const defaultData = exerciseData[defaultEx] || { gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG9zbWhuNXZoY3M4N25va3ExNHpsaGFhMWk2ZnBjdXprb3JkZXE1MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vR85PnGsBwu1PFK/giphy.gif", tips: "Keep core tight." };
+        const defaultData = exerciseData[defaultEx] || { img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80", tips: "Keep core tight." };
 
         container.innerHTML += `
-          <div class="card">
+          <div class="card" id="card-${index}">
             <div class="card-header"><span class="target-tag">${ex.target}</span></div>
             <select id="exercise-${index}" onchange="fetchRecommendation(${index})">${optionsHTML}</select>
             
             <div class="recommendation-box" id="rec-box-${index}">Calculating target recommendation...</div>
             <div id="plate-calc-container-${index}"></div>
 
-            <img id="gif-${index}" class="gif-guide" src="${defaultData.gif}" alt="Exercise Demonstration GIF">
+            <img id="img-${index}" class="img-guide" src="${defaultData.img}" alt="Exercise Guide Image">
             <details>
               <summary>📖 View Form & Safety Cues</summary>
               <div class="form-tips" id="tips-${index}">${defaultData.tips}</div>
@@ -430,6 +428,10 @@
                 </div>
               </div>
             </div>
+            <div class="complete-box">
+              <label for="complete-check-${index}">Mark Exercise Complete</label>
+              <input type="checkbox" id="complete-check-${index}" onchange="toggleExerciseComplete(${index})">
+            </div>
           </div>
         `;
         setTimeout(() => fetchRecommendation(index), 100);
@@ -440,7 +442,6 @@
     renderExercises();
     updateGoalUI(START_WEIGHT);
 
-    // Render Chart
     const ctx = document.getElementById('weightChart').getContext('2d');
     const weightChart = new Chart(ctx, {
       type: 'line',
@@ -477,7 +478,6 @@
             weightChart.update();
           }
 
-          // Fetch Streak
           const streakRef = doc(db, "user_profile", "streak");
           const streakSnap = await getDoc(streakRef);
           if (streakSnap.exists()) {
@@ -513,7 +513,6 @@
             exercises: logData
           });
 
-          // Update Streak
           const streakEl = document.getElementById('streak-counter');
           const newStreak = (parseInt(streakEl.innerText) || 0) + 1;
           streakEl.innerText = newStreak;
